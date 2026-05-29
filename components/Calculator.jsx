@@ -23,7 +23,7 @@ const SCOPES = {
 }
 
 function getTier(advance) {
-  return TIERS.find(t => advance >= t.min && advance <= t.max) || TIERS[0]
+  return TIERS.find(t => advance >= t.min && advance <= t.max) || TIERS[TIERS.length - 1]
 }
 
 function calcEstimate({ rooms, adr, occupancy, projectCost, projectScope }) {
@@ -37,39 +37,31 @@ function calcEstimate({ rooms, adr, occupancy, projectCost, projectScope }) {
   // Current annual gross room revenue
   const annualRevenue = r * a * 365 * o
 
-  // Advance = project cost (that's what RevFlex funds)
-  // Floor $25K, ceiling $500K for this pre-qual calculator
-  const advance = Math.max(25000, Math.min(500000, p))
+  // Advance = project cost — no cap, operator enters what they need
+  const advance = Math.max(25000, p)
 
   // Get tier-based share rate and term cap
   const tier = getTier(advance)
   const shareRate = tier.shareRate
   const termCapYears = tier.termCap
 
-  // Get scope-based cap multiple and RevPAR lift
+  // Get scope-based cap multiple and lift range
   const scope = SCOPES[projectScope] || SCOPES['ffe']
   const capMultiple = scope.cap
   const totalRepayment = Math.round(advance * capMultiple)
 
-  // Revenue coverage ratio check (advance ÷ annual revenue)
-  const coverageRatio = advance / annualRevenue
-
-  // Post-PIP revenue (conservative = low end lift)
+  // Post-PIP revenue — conservative (low lift) and base (midpoint lift)
+  const midLift = (scope.liftLow + scope.liftHigh) / 2
   const postPIPRevenueConservative = annualRevenue * (1 + scope.liftLow)
-  const postPIPRevenueBase = annualRevenue * (1 + (scope.liftLow + scope.liftHigh) / 2)
+  const postPIPRevenueBase = annualRevenue * (1 + midLift)
 
-  // Annual repayment = post-PIP revenue × share rate (conservative case)
+  // Annual repayment = post-PIP revenue × share rate
   const annualRepaymentConservative = postPIPRevenueConservative * shareRate
   const annualRepaymentBase = postPIPRevenueBase * shareRate
 
-  // Payback period = total repayment ÷ annual repayment
-  const paybackYrsBase = totalRepayment / annualRepaymentBase
+  // Payback = total repayment cap ÷ annual repayment
   const paybackYrsConservative = totalRepayment / annualRepaymentConservative
-
-  // RevPAR
-  const currentRevPAR = a * o
-  const postRevPARConservative = currentRevPAR * (1 + scope.liftLow)
-  const revPARLift = Math.round(postRevPARConservative - currentRevPAR)
+  const paybackYrsBase = totalRepayment / annualRepaymentBase
 
   // Additional annual revenue
   const addlRevenueConservative = Math.round(postPIPRevenueConservative - annualRevenue)
@@ -83,13 +75,9 @@ function calcEstimate({ rooms, adr, occupancy, projectCost, projectScope }) {
     termCapYears,
     paybackYrsBase: Math.round(paybackYrsBase * 10) / 10,
     paybackYrsConservative: Math.round(paybackYrsConservative * 10) / 10,
-    annualRepaymentBase: Math.round(annualRepaymentBase),
     annualRevenue: Math.round(annualRevenue),
-    currentRevPAR: Math.round(currentRevPAR),
-    revPARLift,
     addlRevenueConservative,
     addlRevenueBase,
-    coverageRatio: Math.round(coverageRatio * 100) / 100,
     scopeLabel: scope.label,
     liftRangeLow: Math.round(scope.liftLow * 100),
     liftRangeHigh: Math.round(scope.liftHigh * 100),
@@ -173,7 +161,7 @@ export default function Calculator() {
           </div>
         </div>
 
-        {/* Key stats */}
+        {/* Key stats — 3 cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
           {[
             {
@@ -187,31 +175,9 @@ export default function Calculator() {
               sub: `At ${pct(result.shareRate)} gross revenue share`
             },
             {
-              label: 'Est. RevPAR Uplift',
-              value: `+${fmt(result.revPARLift)}/night`,
-              sub: `${result.liftRangeLow}–${result.liftRangeHigh}% conservative range`
-            },
-          ].map(({ label, value, sub }) => (
-            <div key={label} style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>{label}</div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}>{value}</div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '4px' }}>{sub}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Revenue detail row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1px', background: '#E0D9CF' }}>
-          {[
-            {
               label: 'Est. Additional Annual Revenue',
-              value: `${fmt(result.addlRevenueConservative)} – ${fmt(result.addlRevenueBase)}`,
-              sub: 'Conservative to base case range'
-            },
-            {
-              label: 'Revenue Coverage Ratio',
-              value: `${result.coverageRatio}×`,
-              sub: result.coverageRatio < 0.50 ? '✓ Strong — advance well-covered by revenue' : result.coverageRatio < 0.80 ? 'Manageable — standard range' : 'Watch — advance is large relative to revenue'
+              value: `+${fmt(result.addlRevenueConservative)}`,
+              sub: `${result.liftRangeLow}–${result.liftRangeHigh}% revenue lift range`
             },
           ].map(({ label, value, sub }) => (
             <div key={label} style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center' }}>
