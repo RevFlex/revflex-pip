@@ -112,7 +112,7 @@ const selectStyle = {
 export default function Calculator() {
   const [form, setForm] = useState({
     propertyName: '', rooms: '', adr: '',
-    occupancy: '', projectScope: '', projectCost: '', role: '', website: '',
+    occupancy: '', projectScope: '', projectCost: '', timeline: '', role: '', website: '',
   })
   const [submitted, setSubmitted] = useState(false)
   const [result, setResult] = useState(null)
@@ -154,7 +154,7 @@ export default function Calculator() {
             {form.propertyName ? `Here's your estimate, ${form.propertyName}.` : "Here's your estimate."}
           </h2>
           <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-            Ready to continue? Select your role below and submit your inquiry — we'll be in touch within one business day.
+            Ready to continue? Select your role below and request early access — we'll be in touch as we select our founding properties.
           </p>
         </div>
       <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', overflow: 'hidden' }}>
@@ -227,7 +227,7 @@ export default function Calculator() {
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a
-              href={`mailto:hello@revflex.co?subject=RevFlex Inquiry — ${encodeURIComponent(form.propertyName || 'Property')}&body=Estimated advance: ${fmt(result.advance)}%0AScope: ${result.scopeLabel}%0AProperty: ${form.propertyName}%0ARooms: ${form.rooms}%0AWebsite: ${form.website}`}
+              href={`mailto:hello@revflex.co?subject=RevFlex Inquiry — ${encodeURIComponent(form.propertyName || 'Property')}&body=Estimated advance: ${fmt(result.advance)}%0AScope: ${result.scopeLabel}%0AProperty: ${form.propertyName}%0ARooms: ${form.rooms}%0ATimeline: ${form.timeline}%0AWebsite: ${form.website}`}
               style={{
                 background: '#C27C4E', color: '#fff', fontSize: '14px', fontWeight: '500',
                 padding: '12px 24px', borderRadius: '7px', textDecoration: 'none', display: 'inline-block'
@@ -236,7 +236,7 @@ export default function Calculator() {
               Request Early Access →
             </a>
             <button
-              onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', role: '', website: '' }) }}
+              onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', role: '', website: '' }) }}
               style={{
                 background: 'transparent', color: '#7A6A5A', fontSize: '14px',
                 padding: '12px 20px', border: '1px solid #D0C9C0', borderRadius: '7px', cursor: 'pointer'
@@ -324,6 +324,18 @@ export default function Calculator() {
             <option value="other">Not Sure Yet</option>
           </select>
           {errors.projectScope && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.projectScope}</div>}
+        </div>
+
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>When Are You Looking to Start?</label>
+          <select style={selectStyle} value={form.timeline} onChange={e => set('timeline', e.target.value)}>
+            <option value="">Select a timeframe…</option>
+            <option value="immediate">Immediately / Within 30 days</option>
+            <option value="1-3mo">1–3 months</option>
+            <option value="3-6mo">3–6 months</option>
+            <option value="6-12mo">6–12 months</option>
+            <option value="exploring">Just exploring for now</option>
+          </select>
         </div>
 
 
