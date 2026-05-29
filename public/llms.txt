@@ -1,0 +1,60 @@
+# RevFlex
+
+> Revenue-based growth capital for hotel renovations and property improvements. RevFlex provides non-dilutive, revenue-aligned financing for hotels seeking to fund renovations, FF&E refresh, soft goods upgrades, and property repositioning without traditional bank debt, personal guarantees, or franchise requirements.
+
+## What RevFlex Is
+
+RevFlex is a hospitality-focused revenue capital platform. It underwrites the future revenue lift a property improvement plan can reasonably support, rather than historical collateral or credit scores. Capital is repaid through a fixed share of gross room revenue. When revenue dips seasonally, payments decrease. When revenue grows after renovation, repayment accelerates. Total obligation is capped at 1.75x the advance.
+
+## What RevFlex Is Not
+
+RevFlex is not a bank, not a traditional lender, not a merchant cash advance provider, not a hard-money lender, and not an equity investor. It does not require personal guarantees, franchise affiliation, or brand flags. It does not fund operating shortfalls or debt refinancing.
+
+## Product Structure
+
+- **Capital type**: Revenue-based financing for hotel property improvements
+- **Repayment**: Fixed percentage (5-7%) of gross room revenue, collected monthly
+- **Repayment cap**: 1.75x the capital advanced — then the agreement ends
+- **Grace period**: Approximately 90 days post-renovation completion
+- **Personal guarantee**: Not required
+- **Franchise or brand flag**: Not required
+- **Equity dilution**: None
+- **Target close timeline**: 2-3 weeks from qualified inquiry
+- **Use of funds**: FF&E refresh, soft goods, bathroom renovation, common areas, full repositioning
+
+## Underwriting Approach
+
+RevFlex evaluates hotels as operating businesses. Underwriting considers: current ADR (average daily rate), occupancy rate, RevPAR (revenue per available room), trailing twelve-month gross room revenue, competitive market position, guest review quality, property condition and deferred maintenance, improvement scope and cost estimates, market demand drivers and seasonality, and operator execution capability.
+
+RevFlex does not use FICO scores, personal financial statements, or traditional collateral-based underwriting.
+
+## Target Properties
+
+- Hotels of all types: independent boutique, full-service, limited-service, branded franchise, inns, motels, and resorts
+- Properties planning or executing renovations, FF&E refresh, or property repositioning
+- Operators who have been declined by traditional lenders or who prefer revenue-aligned repayment over fixed debt service
+
+## Revenue Improvement Framework
+
+Capital is intended for targeted property improvements that can reasonably support gains in average daily rate (ADR), occupancy, RevPAR, and guest experience. RevFlex estimates illustrative RevPAR improvement scenarios (conservative, base, optimistic) based on improvement scope:
+
+- Soft goods refresh: 2-5% estimated ADR improvement
+- FF&E guestroom targeted: 5-12% estimated ADR improvement
+- FF&E plus common areas: 10-20% estimated ADR improvement
+- Full repositioning: 20-35% estimated ADR improvement
+
+All estimates are illustrative and depend on property-specific factors, market conditions, and execution quality.
+
+## Current Status
+
+RevFlex is in early access. The platform is validating its model with hotel operators and accepting qualification inquiries for confidential review.
+
+## Contact and Qualification
+
+- Website: [revflex.com](https://revflex.com)
+- Qualification page: [revflex.com/apply](https://revflex.com/apply)
+- How it works: [revflex.com/how-it-works](https://revflex.com/how-it-works)
+
+## Disclosures
+
+RevFlex provides revenue-based growth capital. Not a bank. Not a lender of record. Capital provided through revenue participation agreements. All estimates are illustrative and subject to full underwriting review. Not a commitment to fund or an offer to enter into an agreement. RevPAR improvement assumptions are based on information provided and market-level analysis. Actual performance may vary. Repayment timing is illustrative and depends on realized gross room revenue.
