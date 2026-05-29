@@ -1,261 +1,363 @@
-'use client';
+'use client'
 
-import { useState, useRef } from 'react';
+import { useState } from 'react'
 
-/* ── Underwriting engine ────────────────────────────── */
-const SCOPES = {
-  ffe:       { label: 'Guestroom FF&E refresh',     adr: [0.05, 0.085, 0.12], occ: [0.01, 0.02, 0.03] },
-  soft:      { label: 'Soft goods refresh',          adr: [0.02, 0.035, 0.05], occ: [0.00, 0.005, 0.01] },
-  mixed:     { label: 'FF&E + common areas',         adr: [0.10, 0.15, 0.20],  occ: [0.02, 0.04, 0.06] },
-  bath:      { label: 'Bathroom + hard-finish',      adr: [0.10, 0.15, 0.20],  occ: [0.02, 0.04, 0.06] },
-  full:      { label: 'Full repositioning',          adr: [0.20, 0.275, 0.35], occ: [0.04, 0.07, 0.10] },
-  pip:       { label: 'Brand PIP compliance',        adr: [0.05, 0.085, 0.12], occ: [0.01, 0.02, 0.03] },
-  unsure:    { label: 'Not sure yet',                adr: [0.05, 0.085, 0.12], occ: [0.01, 0.02, 0.03] },
-};
+// ─── Underwriting math ──────────────────────────────────────────────────────
+// Annual gross room revenue = rooms × ADR × 365 × (occupancy/100)
+// RevFlex capacity = MIN(project cost × 1.1, annual revenue × 0.35)
+//   → floor: $25,000  |  ceiling: $500,000
+// Repayment cap = capacity × 1.75
+// Revenue share = 5%
+// Illustrative payback months = (capacity × 1.75) / (annual revenue × 0.05 / 12)
+// RevPAR uplift: conservative +12% post-renovation
 
-const ROLES = [
-  'Hotel owner',
-  'Operator / management company',
-  'Developer',
-  'Broker / advisor',
-  'Capital partner',
-  'Other',
-];
+function calcEstimate({ rooms, adr, occupancy, projectCost }) {
+  const r = Number(rooms)
+  const a = Number(adr)
+  const o = Number(occupancy) / 100
+  const p = Number(projectCost)
 
-function revShareRate(cost) {
-  if (cost < 150000) return 0.06;
-  if (cost < 300000) return 0.065;
-  return 0.07;
-}
+  if (!r || !a || !o || !p) return null
 
-function calc(rooms, adr, occ, scope, cost) {
-  const s = SCOPES[scope] || SCOPES.unsure;
-  const rate = revShareRate(cost);
-  const curRevPAR = adr * (occ / 100);
-  const curAnnual = curRevPAR * rooms * 365;
-
-  const scenarios = ['Conservative', 'Base', 'Optimistic'].map((label, i) => {
-    const newADR = adr * (1 + s.adr[i]);
-    const newOcc = Math.min(occ / 100 + s.occ[i], 0.98);
-    const newRevPAR = newADR * newOcc;
-    const uplift = newRevPAR - curRevPAR;
-    const newAnnual = newRevPAR * rooms * 365;
-    const share = newAnnual * rate;
-    const obligation = cost * 1.75;
-    const months = share > 0 ? Math.round((obligation / share) * 12) : 999;
-    return { label, newRevPAR, uplift, pctADR: s.adr[i], months, obligation };
-  });
+  const annualRevenue = r * a * 365 * o
+  const rawCapacity = Math.min(p * 1.1, annualRevenue * 0.35)
+  const capacity = Math.max(25000, Math.min(500000, rawCapacity))
+  const cap = capacity * 1.75
+  const monthlyRevShare = annualRevenue * 0.05 / 12
+  const paybackMonths = Math.round(cap / monthlyRevShare)
+  const currentRevPAR = a * o
+  const upliftedRevPAR = currentRevPAR * 1.12
+  const revparLift = upliftedRevPAR - currentRevPAR
 
   return {
-    curRevPAR, curAnnual, scenarios, rate,
-    fundLow: Math.round(cost * 0.85 / 1000) * 1000,
-    fundHigh: Math.round(cost * 1.15 / 1000) * 1000,
-  };
+    capacity: Math.round(capacity),
+    cap: Math.round(cap),
+    paybackMonths,
+    annualRevenue: Math.round(annualRevenue),
+    currentRevPAR: Math.round(currentRevPAR),
+    revparLift: Math.round(revparLift),
+  }
 }
 
-const fmt = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-const pct = n => `${(n * 100).toFixed(1)}%`;
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US')
+}
 
-/* ── Component ──────────────────────────────────────── */
+// ─── Styles ─────────────────────────────────────────────────────────────────
+const inputStyle = {
+  width: '100%',
+  padding: '11px 14px',
+  fontSize: '15px',
+  border: '1px solid #D0C9C0',
+  borderRadius: '7px',
+  background: '#FAF8F4',
+  color: '#1A1D1A',
+  outline: 'none',
+  boxSizing: 'border-box',
+  fontFamily: 'inherit',
+}
+const labelStyle = {
+  display: 'block',
+  fontSize: '11px',
+  fontWeight: '600',
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  color: '#7A6A5A',
+  marginBottom: '6px',
+}
+const selectStyle = {
+  ...inputStyle,
+  appearance: 'none',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A6A5A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 14px center',
+  paddingRight: '36px',
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 export default function Calculator() {
-  const [rooms, setRooms]       = useState('');
-  const [adr, setAdr]           = useState('');
-  const [occ, setOcc]           = useState('');
-  const [scope, setScope]       = useState('');
-  const [cost, setCost]         = useState('');
-  const [role, setRole]         = useState('');
-  const [url, setUrl]           = useState('');
-  const [market, setMarket]     = useState('');
-  const [propName, setPropName] = useState('');
-  const [email, setEmail]       = useState('');
-  const [name, setName]         = useState('');
-  const [results, setResults]   = useState(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    propertyName: '',
+    location: '',
+    rooms: '',
+    adr: '',
+    occupancy: '',
+    projectScope: '',
+    projectCost: '',
+    role: '',
+    website: '',
+  })
+  const [submitted, setSubmitted] = useState(false)
+  const [result, setResult] = useState(null)
+  const [errors, setErrors] = useState({})
 
-  const resultsRef = useRef(null);
-  const ready = rooms && adr && occ && scope && cost && role;
-
-  function handleCalc() {
-    const r = calc(+rooms, +adr, +occ, scope, +cost);
-    setResults(r);
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+  function set(field, val) {
+    setForm(f => ({ ...f, [field]: val }))
+    setErrors(e => ({ ...e, [field]: undefined }))
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const payload = {
-      propName, url, market, rooms, adr, occ, scope, cost, role, name, email,
-      results: results ? { fundLow: results.fundLow, fundHigh: results.fundHigh, baseRevPAR: results.scenarios[1]?.newRevPAR } : null,
-      ts: new Date().toISOString(),
-    };
-    console.log('REVFLEX_LEAD:', JSON.stringify(payload, null, 2));
-    setSubmitted(true);
+  function validate() {
+    const e = {}
+    if (!form.rooms) e.rooms = 'Required'
+    if (!form.adr) e.adr = 'Required'
+    if (!form.occupancy) e.occupancy = 'Required'
+    else if (Number(form.occupancy) < 1 || Number(form.occupancy) > 100) e.occupancy = 'Enter 1–100'
+    if (!form.projectCost) e.projectCost = 'Required'
+    if (!form.role) e.role = 'Required'
+    return e
   }
 
+  function handleSubmit() {
+    const e = validate()
+    if (Object.keys(e).length) { setErrors(e); return }
+
+    const est = calcEstimate({
+      rooms: form.rooms,
+      adr: form.adr,
+      occupancy: form.occupancy,
+      projectCost: form.projectCost,
+    })
+    setResult(est)
+    setSubmitted(true)
+  }
+
+  // ── Result view ─────────────────────────────────────────────────────────
+  if (submitted && result) {
+    return (
+      <div style={{
+        background: '#FAF8F4', borderRadius: '16px',
+        border: '1px solid #E0D9CF', overflow: 'hidden'
+      }}>
+        {/* Result header */}
+        <div style={{
+          background: '#1A1D1A', padding: '32px 36px'
+        }}>
+          <div style={{
+            fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            color: '#9A8A7A', marginBottom: '6px', fontWeight: '600'
+          }}>Your Illustrative Estimate</div>
+          <div style={{
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: '42px', fontWeight: '400', color: '#FAF8F4', lineHeight: '1'
+          }}>
+            {fmt(result.capacity)}
+          </div>
+          <div style={{ fontSize: '14px', color: '#7A8A7A', marginTop: '8px' }}>
+            Estimated RevFlex financing capacity
+          </div>
+        </div>
+
+        {/* Stat cards */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '1px', background: '#E0D9CF'
+        }}>
+          {[
+            { label: 'Repayment Cap', value: fmt(result.cap), sub: '1.75× advance' },
+            { label: 'Est. Payback Period', value: `${result.paybackMonths} mo`, sub: 'At 5% gross revenue share' },
+            { label: 'RevPAR Uplift Est.', value: `+${fmt(result.revparLift)}/night`, sub: '~12% conservative lift' },
+          ].map(({ label, value, sub }) => (
+            <div key={label} style={{
+              background: '#FAF8F4', padding: '20px 22px', textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>{label}</div>
+              <div style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: '20px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1'
+              }}>{value}</div>
+              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '4px' }}>{sub}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Disclaimer + CTA */}
+        <div style={{ padding: '28px 36px' }}>
+          <p style={{
+            fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7',
+            marginBottom: '24px', fontStyle: 'italic'
+          }}>
+            This is an illustrative estimate only. Actual financing capacity is subject to full underwriting, property review, and RevFlex approval. Revenue uplift projections are based on comparable market data and not guaranteed.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <a
+              href={`mailto:hello@revflex.co?subject=RevFlex Inquiry — ${encodeURIComponent(form.propertyName || 'Property')}&body=Estimated capacity: ${fmt(result.capacity)}%0AProperty: ${form.propertyName}%0ALocation: ${form.location}%0ARooms: ${form.rooms}%0AWebsite: ${form.website}`}
+              style={{
+                background: '#C27C4E', color: '#fff',
+                fontSize: '14px', fontWeight: '500',
+                padding: '12px 24px', borderRadius: '7px', textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              Continue My Inquiry →
+            </a>
+            <button
+              onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', location: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', role: '', website: '' }) }}
+              style={{
+                background: 'transparent', color: '#7A6A5A',
+                fontSize: '14px', padding: '12px 20px',
+                border: '1px solid #D0C9C0', borderRadius: '7px', cursor: 'pointer'
+              }}
+            >
+              Start Over
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Form view ────────────────────────────────────────────────────────────
   return (
-    <div>
-      <div className="calc-wrap">
-        {/* Property info */}
-        <div className="calc-row">
-          <label className="calc-label">Property name</label>
-          <input className="calc-input" value={propName} onChange={e => setPropName(e.target.value)} placeholder="e.g., The Harborview Inn" />
+    <div style={{
+      background: '#FAF8F4', borderRadius: '16px',
+      border: '1px solid #E0D9CF', padding: '40px 36px'
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+
+        {/* Property name */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Property Name</label>
+          <input
+            style={inputStyle}
+            placeholder="The Meadowbrook Inn"
+            value={form.propertyName}
+            onChange={e => set('propertyName', e.target.value)}
+          />
         </div>
 
-        <div className="calc-pair">
-          <div className="calc-row">
-            <label className="calc-label">Location / market</label>
-            <input className="calc-input" value={market} onChange={e => setMarket(e.target.value)} placeholder="e.g., Asheville, NC" />
-          </div>
-          <div className="calc-row">
-            <label className="calc-label">Number of rooms *</label>
-            <input className="calc-input" type="number" value={rooms} onChange={e => setRooms(e.target.value)} placeholder="e.g., 42" />
-          </div>
+        {/* Location */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Location / Market</label>
+          <input
+            style={inputStyle}
+            placeholder="Asheville, NC"
+            value={form.location}
+            onChange={e => set('location', e.target.value)}
+          />
         </div>
 
-        <hr className="calc-divider" />
-
-        {/* Performance */}
-        <div className="calc-pair">
-          <div className="calc-row">
-            <label className="calc-label">Current ADR ($) *</label>
-            <input className="calc-input" type="number" value={adr} onChange={e => setAdr(e.target.value)} placeholder="e.g., 165" />
-          </div>
-          <div className="calc-row">
-            <label className="calc-label">Average occupancy (%) *</label>
-            <input className="calc-input" type="number" value={occ} onChange={e => setOcc(e.target.value)} placeholder="e.g., 68" />
-          </div>
+        {/* Rooms */}
+        <div>
+          <label style={labelStyle}>Number of Rooms *</label>
+          <input
+            style={{ ...inputStyle, borderColor: errors.rooms ? '#C0392B' : '#D0C9C0' }}
+            type="number" min="1" placeholder="24"
+            value={form.rooms}
+            onChange={e => set('rooms', e.target.value)}
+          />
+          {errors.rooms && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.rooms}</div>}
         </div>
-        <p className="calc-hint">Approximate figures are fine at this stage.</p>
 
-        <hr className="calc-divider" />
+        {/* ADR */}
+        <div>
+          <label style={labelStyle}>Current ADR ($) *</label>
+          <input
+            style={{ ...inputStyle, borderColor: errors.adr ? '#C0392B' : '#D0C9C0' }}
+            type="number" min="1" placeholder="189"
+            value={form.adr}
+            onChange={e => set('adr', e.target.value)}
+          />
+          {errors.adr && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.adr}</div>}
+          <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>Approximate figures are fine</div>
+        </div>
 
-        {/* Project */}
-        <div className="calc-row">
-          <label className="calc-label">What are you improving? *</label>
-          <select className="calc-input" value={scope} onChange={e => setScope(e.target.value)}>
+        {/* Occupancy */}
+        <div>
+          <label style={labelStyle}>Average Occupancy (%) *</label>
+          <input
+            style={{ ...inputStyle, borderColor: errors.occupancy ? '#C0392B' : '#D0C9C0' }}
+            type="number" min="1" max="100" placeholder="62"
+            value={form.occupancy}
+            onChange={e => set('occupancy', e.target.value)}
+          />
+          {errors.occupancy && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.occupancy}</div>}
+        </div>
+
+        {/* Project cost */}
+        <div>
+          <label style={labelStyle}>Estimated Project Cost ($) *</label>
+          <input
+            style={{ ...inputStyle, borderColor: errors.projectCost ? '#C0392B' : '#D0C9C0' }}
+            type="number" min="1" placeholder="175000"
+            value={form.projectCost}
+            onChange={e => set('projectCost', e.target.value)}
+          />
+          {errors.projectCost && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.projectCost}</div>}
+          <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>A rough estimate is fine</div>
+        </div>
+
+        {/* Project scope */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>What Are You Improving?</label>
+          <select
+            style={selectStyle}
+            value={form.projectScope}
+            onChange={e => set('projectScope', e.target.value)}
+          >
             <option value="">Select project scope…</option>
-            {Object.entries(SCOPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            <option value="ffe">Guestroom FF&E refresh</option>
+            <option value="soft">Soft goods refresh</option>
+            <option value="ffe-common">FF&E + common areas</option>
+            <option value="bath">Bathroom + hard-finish</option>
+            <option value="full">Full repositioning</option>
+            <option value="pip">Brand PIP compliance</option>
+            <option value="other">Not sure yet</option>
           </select>
         </div>
 
-        <div className="calc-row">
-          <label className="calc-label">Estimated project cost ($) *</label>
-          <input className="calc-input" type="number" value={cost} onChange={e => setCost(e.target.value)} placeholder="e.g., 250000" />
-          <p className="calc-hint">A rough estimate is fine. We will refine during review.</p>
-        </div>
-
-        <hr className="calc-divider" />
-
-        {/* Discovery */}
-        <div className="calc-row">
-          <label className="calc-label">I am a… *</label>
-          <select className="calc-input" value={role} onChange={e => setRole(e.target.value)}>
+        {/* Role */}
+        <div>
+          <label style={labelStyle}>I Am A… *</label>
+          <select
+            style={{ ...selectStyle, borderColor: errors.role ? '#C0392B' : '#D0C9C0' }}
+            value={form.role}
+            onChange={e => set('role', e.target.value)}
+          >
             <option value="">Select your role…</option>
-            {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+            <option value="owner">Hotel owner</option>
+            <option value="operator">Operator / management company</option>
+            <option value="developer">Developer</option>
+            <option value="broker">Broker / advisor</option>
+            <option value="capital">Capital partner</option>
+            <option value="other">Other</option>
           </select>
+          {errors.role && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.role}</div>}
         </div>
 
-        <div className="calc-row">
-          <label className="calc-label">Property website</label>
-          <input className="calc-input" type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://yourhotel.com" />
+        {/* Website */}
+        <div>
+          <label style={labelStyle}>Property Website</label>
+          <input
+            style={inputStyle}
+            placeholder="meadowbrookinn.com"
+            value={form.website}
+            onChange={e => set('website', e.target.value)}
+          />
         </div>
 
-        <button
-          className={`btn ${ready ? 'btn-primary' : 'btn-outline'}`}
-          onClick={handleCalc}
-          disabled={!ready}
-          style={{ width: '100%', marginTop: 8, opacity: ready ? 1 : 0.5, cursor: ready ? 'pointer' : 'not-allowed' }}
-        >
-          Estimate Your RevFlex Capacity
-        </button>
       </div>
 
-      {/* ── Results ──────────────────────────────────── */}
-      {results && (
-        <div className="results" ref={resultsRef}>
-          <p className="eyebrow" style={{ marginBottom: 24 }}>Illustrative Estimate</p>
+      <button
+        onClick={handleSubmit}
+        style={{
+          width: '100%',
+          marginTop: '28px',
+          background: '#C27C4E', color: '#fff',
+          fontSize: '15px', fontWeight: '500',
+          padding: '14px', borderRadius: '7px',
+          border: 'none', cursor: 'pointer',
+          fontFamily: 'inherit', letterSpacing: '0.02em'
+        }}
+      >
+        Estimate My RevFlex Capacity →
+      </button>
 
-          {/* Funding range */}
-          <div className="result-card">
-            <p className="eyebrow">Estimated Funding Range</p>
-            <p className="result-value" style={{ marginTop: 8 }}>
-              {fmt(results.fundLow)} – {fmt(results.fundHigh)}
-            </p>
-            <p className="result-label">Based on {fmt(+cost)} estimated project cost</p>
-          </div>
-
-          {/* RevPAR scenarios */}
-          <div className="result-card">
-            <p className="eyebrow">Illustrative RevPAR Improvement</p>
-            <div className="result-scenarios">
-              {results.scenarios.map((s, i) => (
-                <div className="scenario" key={i}>
-                  <p className="scenario-label">{s.label}</p>
-                  <p className="scenario-value">{fmt(s.newRevPAR)}</p>
-                  <p className="scenario-delta">+{fmt(s.uplift)} ({pct(s.pctADR)} ADR)</p>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 14 }}>
-              Current RevPAR: {fmt(results.curRevPAR)} · Annual room revenue: {fmt(results.curAnnual)}
-            </p>
-          </div>
-
-          {/* Repayment structure */}
-          <div className="result-card">
-            <p className="eyebrow">Illustrative Repayment Structure</p>
-            <div className="result-pair">
-              <div className="result-metric">
-                <p className="result-metric-label">Revenue share rate</p>
-                <p className="result-metric-value">{pct(results.rate)}</p>
-                <p className="result-metric-detail">of gross room revenue</p>
-              </div>
-              <div className="result-metric">
-                <p className="result-metric-label">Repayment cap</p>
-                <p className="result-metric-value">1.75×</p>
-                <p className="result-metric-detail">{fmt(results.scenarios[1].obligation)} total obligation</p>
-              </div>
-            </div>
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
-              <p className="result-metric-label">Estimated repayment timeline (base scenario)</p>
-              <p className="result-metric-value" style={{ marginTop: 4 }}>{results.scenarios[1].months} months</p>
-              <p className="result-metric-detail">
-                Range: {results.scenarios[2].months}–{results.scenarios[0].months} months
-              </p>
-            </div>
-          </div>
-
-          {/* Disclosures */}
-          <p className="disclosure">
-            Estimate shown for discussion purposes only. Not a commitment to fund or an offer to enter into an agreement. Actual eligibility, advance amount, repayment terms, and pricing depend on full underwriting review. RevPAR improvement assumptions are based on information provided and market-level analysis. Actual performance may vary.
-          </p>
-
-          {/* Lead capture */}
-          {!submitted ? (
-            <div className="lead-capture">
-              <h3>Request an early review</h3>
-              <p>Share your contact details and we will respond within 48 hours with an initial assessment.</p>
-              <form onSubmit={handleSubmit}>
-                <div className="calc-pair" style={{ marginBottom: 12 }}>
-                  <input className="lead-input" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required style={{ width: '100%' }} />
-                  <input className="lead-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" required style={{ width: '100%' }} />
-                </div>
-                <button className="btn btn-primary" type="submit" style={{ width: '100%' }}>
-                  Request Early Review
-                </button>
-              </form>
-              <p className="trust-note">🔒 All property data is confidential. Used exclusively for qualification review.</p>
-            </div>
-          ) : (
-            <div className="confirmation">
-              <p><strong>Received.</strong></p>
-              <p style={{ fontSize: 14, color: 'var(--text-soft)', marginTop: 8 }}>
-                We will review your property details and respond within 48 hours. RevFlex is in early access — you are among the first operators we are working with.
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+      <p style={{
+        fontSize: '12px', color: '#B0A898', textAlign: 'center',
+        marginTop: '14px', lineHeight: '1.6'
+      }}>
+        Not a commitment or approval. Only an initial estimate based on the inputs you provide.
+      </p>
     </div>
-  );
+  )
 }
