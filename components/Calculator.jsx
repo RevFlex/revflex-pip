@@ -146,6 +146,17 @@ export default function Calculator() {
   // ── Result view ─────────────────────────────────────────────────────────
   if (submitted && result) {
     return (
+      <div>
+        {/* Reactive heading — post result */}
+        <div style={{ marginBottom: '32px' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
+          <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
+            {form.propertyName ? `Here's your estimate, ${form.propertyName}.` : "Here's your estimate."}
+          </h2>
+          <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
+            Ready to continue? Select your role below and submit your inquiry — we'll be in touch within one business day.
+          </p>
+        </div>
       <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', overflow: 'hidden' }}>
 
         {/* Header */}
@@ -222,7 +233,7 @@ export default function Calculator() {
                 padding: '12px 24px', borderRadius: '7px', textDecoration: 'none', display: 'inline-block'
               }}
             >
-              Continue My Inquiry →
+              Request Early Access →
             </a>
             <button
               onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', role: '', website: '' }) }}
@@ -236,11 +247,23 @@ export default function Calculator() {
           </div>
         </div>
       </div>
+      </div>
     )
   }
 
   // ── Form view ────────────────────────────────────────────────────────────
   return (
+    <div>
+      {/* Static heading — pre submit */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
+        <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
+          Start with a simple estimate.
+        </h2>
+        <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
+          Just a few inputs to see your available RevFlex financing amount. This is not a commitment or approval — only an initial estimate.
+        </p>
+      </div>
     <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: '40px 36px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
@@ -318,6 +341,7 @@ export default function Calculator() {
       <p style={{ fontSize: '12px', color: '#B0A898', textAlign: 'center', marginTop: '14px', lineHeight: '1.6' }}>
         Not a commitment or approval. Only an initial estimate based on the inputs you provide.
       </p>
+    </div>
     </div>
   )
 }
