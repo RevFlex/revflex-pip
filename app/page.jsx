@@ -198,7 +198,8 @@ export default function Home() {
                   </svg>
                 ),
                 title: 'Lump sum at closing',
-                sub: 'Full amount available for your property improvement'
+                sub: 'Full amount available for your property improvement',
+                footnote: '*Certain restrictions may apply'
               },
               {
                 icon: (
@@ -259,7 +260,7 @@ export default function Home() {
                 title: 'No equity dilution',
                 sub: 'You keep full ownership. No warrants, no equity stake'
               },
-            ].map(({ icon, title, sub }) => (
+            ].map(({ icon, title, sub, footnote }) => (
               <div key={title} style={{
                 background: '#FAF8F4', border: '1px solid #E8E4DE',
                 borderRadius: '12px', padding: '24px 20px',
@@ -268,6 +269,7 @@ export default function Home() {
                 <div style={{ lineHeight: '1' }}>{icon}</div>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#1A1D1A', lineHeight: '1.3' }}>{title}</div>
                 <div style={{ fontSize: '13px', color: '#7A6A5A', lineHeight: '1.6' }}>{sub}</div>
+                {footnote && <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '2px' }}>{footnote}</div>}
               </div>
             ))}
           </div>
