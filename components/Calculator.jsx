@@ -111,7 +111,7 @@ const selectStyle = {
 
 export default function Calculator() {
   const [form, setForm] = useState({
-    propertyName: '', rooms: '', adr: '',
+    propertyName: '', name: '', email: '', rooms: '', adr: '',
     occupancy: '', projectScope: '', projectCost: '', timeline: '', role: '', website: '',
   })
   const [submitted, setSubmitted] = useState(false)
@@ -133,6 +133,17 @@ export default function Calculator() {
     if (!form.projectScope) e.projectScope = 'Required'
     if (!form.website) e.website = 'Required'
     return e
+  }
+
+  function handleInquiry() {
+    const e = {}
+    if (!form.name) e.name = 'Required'
+    if (!form.email) e.email = 'Required'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email address'
+    if (Object.keys(e).length) { setErrors(e); return }
+    const subject = encodeURIComponent(`RevFlex Inquiry — ${form.propertyName || 'Property'}`)
+    const body = encodeURIComponent(`Estimated advance: ${fmt(result.advance)}\nScope: ${result.scopeLabel}\nName: ${form.name}\nEmail: ${form.email}\nRole: ${form.role}\nProperty: ${form.propertyName}\nRooms: ${form.rooms}\nTimeline: ${form.timeline}\nWebsite: ${form.website}`)
+    window.location.href = `mailto:hello@revflex.co?subject=${subject}&body=${body}`
   }
 
   function handleSubmit() {
@@ -207,36 +218,46 @@ export default function Calculator() {
           <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic' }}>
             Illustrative estimate only. Actual financing capacity, share rate, and repayment cap are subject to full underwriting, property review, and RevFlex approval. Revenue uplift projections are based on comparable market benchmarks and are not guaranteed.
           </p>
-          {/* Role gate — shown post-estimate */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ ...labelStyle, marginBottom: '8px' }}>One more thing — I am a…</label>
-            <select
-              style={{ ...selectStyle, maxWidth: '320px' }}
-              value={form.role}
-              onChange={e => set('role', e.target.value)}
-            >
-              <option value="">Select your role…</option>
-              <option value="owner">Hotel owner</option>
-              <option value="operator">Operator / management company</option>
-              <option value="developer">Developer</option>
-              <option value="broker">Broker / advisor</option>
-              <option value="capital">Capital partner</option>
-              <option value="other">Other</option>
-            </select>
+          {/* Post-result — name, email, role */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div>
+              <label style={labelStyle}>Your Name *</label>
+              <input style={{ ...inputStyle, borderColor: errors.name ? '#C0392B' : '#D0C9C0' }}
+                placeholder="Jane Smith" value={form.name} onChange={e => set('name', e.target.value)} />
+              {errors.name && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.name}</div>}
+            </div>
+            <div>
+              <label style={labelStyle}>Email Address *</label>
+              <input style={{ ...inputStyle, borderColor: errors.email ? '#C0392B' : '#D0C9C0' }}
+                type="email" placeholder="jane@meadowbrookinn.com" value={form.email} onChange={e => set('email', e.target.value)} />
+              {errors.email && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.email}</div>}
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>I Am A…</label>
+              <select style={selectStyle} value={form.role} onChange={e => set('role', e.target.value)}>
+                <option value="">Select your role…</option>
+                <option value="owner">Hotel owner</option>
+                <option value="operator">Operator / management company</option>
+                <option value="developer">Developer</option>
+                <option value="broker">Broker / advisor</option>
+                <option value="capital">Capital partner</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <a
-              href={`mailto:hello@revflex.co?subject=RevFlex Inquiry — ${encodeURIComponent(form.propertyName || 'Property')}&body=Estimated advance: ${fmt(result.advance)}%0AScope: ${result.scopeLabel}%0AProperty: ${form.propertyName}%0ARooms: ${form.rooms}%0ATimeline: ${form.timeline}%0AWebsite: ${form.website}`}
+            <button
+              onClick={handleInquiry}
               style={{
                 background: '#C27C4E', color: '#fff', fontSize: '14px', fontWeight: '500',
-                padding: '12px 24px', borderRadius: '7px', textDecoration: 'none', display: 'inline-block'
+                padding: '12px 24px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontFamily: 'inherit'
               }}
             >
               Request Early Access →
-            </a>
+            </button>
             <button
-              onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', role: '', website: '' }) }}
+              onClick={() => { setSubmitted(false); setResult(null); setForm({ propertyName: '', name: '', email: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', role: '', website: '' }) }}
               style={{
                 background: 'transparent', color: '#7A6A5A', fontSize: '14px',
                 padding: '12px 20px', border: '1px solid #D0C9C0', borderRadius: '7px', cursor: 'pointer'
