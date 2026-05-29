@@ -58,7 +58,7 @@ export default function Home() {
           fontSize: '18px', lineHeight: '1.7', color: '#4A4E4A',
           maxWidth: '580px', margin: '0 auto 40px'
         }}>
-          RevFlex helps hotel owners fund property improvements and upgrades with payments designed around hospitality revenue realities.
+          RevFlex helps hotel owners fund property improvements with payments designed around your gross revenue.
         </p>
 
         <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
