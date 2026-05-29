@@ -143,7 +143,6 @@ export default function Calculator() {
     else if (Number(form.occupancy) < 1 || Number(form.occupancy) > 100) e.occupancy = 'Enter 1–100'
     if (!form.projectCost) e.projectCost = 'Required'
     if (!form.projectScope) e.projectScope = 'Required'
-    if (!form.role) e.role = 'Required'
     if (!form.website) e.website = 'Required'
     return e
   }
@@ -228,6 +227,24 @@ export default function Calculator() {
           <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic' }}>
             Illustrative estimate only. Actual financing capacity, share rate, and repayment cap are subject to full underwriting, property review, and RevFlex approval. Revenue uplift projections are based on comparable market benchmarks and are not guaranteed.
           </p>
+          {/* Role gate — shown post-estimate */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ ...labelStyle, marginBottom: '8px' }}>One more thing — I am a…</label>
+            <select
+              style={{ ...selectStyle, maxWidth: '320px' }}
+              value={form.role}
+              onChange={e => set('role', e.target.value)}
+            >
+              <option value="">Select your role…</option>
+              <option value="owner">Hotel owner</option>
+              <option value="operator">Operator / management company</option>
+              <option value="developer">Developer</option>
+              <option value="broker">Broker / advisor</option>
+              <option value="capital">Capital partner</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a
               href={`mailto:hello@revflex.co?subject=RevFlex Inquiry — ${encodeURIComponent(form.propertyName || 'Property')}&body=Estimated advance: ${fmt(result.advance)}%0AScope: ${result.scopeLabel}%0AProperty: ${form.propertyName}%0ARooms: ${form.rooms}%0AWebsite: ${form.website}`}
@@ -261,6 +278,14 @@ export default function Calculator() {
         <div style={{ gridColumn: '1 / -1' }}>
           <label style={labelStyle}>Property Name</label>
           <input style={inputStyle} placeholder="The Meadowbrook Inn" value={form.propertyName} onChange={e => set('propertyName', e.target.value)} />
+        </div>
+
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Property Website *</label>
+          <input style={{ ...inputStyle, borderColor: errors.website ? '#C0392B' : '#D0C9C0' }}
+            placeholder="meadowbrookinn.com" value={form.website} onChange={e => set('website', e.target.value)} />
+          {errors.website && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>Required — helps us pre-research your property</div>}
+          <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>Enables property pre-research before your inquiry</div>
         </div>
 
         <div>
@@ -309,28 +334,7 @@ export default function Calculator() {
           {errors.projectScope && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.projectScope}</div>}
         </div>
 
-        <div>
-          <label style={labelStyle}>I Am A… *</label>
-          <select style={{ ...selectStyle, borderColor: errors.role ? '#C0392B' : '#D0C9C0' }}
-            value={form.role} onChange={e => set('role', e.target.value)}>
-            <option value="">Select your role…</option>
-            <option value="owner">Hotel owner</option>
-            <option value="operator">Operator / management company</option>
-            <option value="developer">Developer</option>
-            <option value="broker">Broker / advisor</option>
-            <option value="capital">Capital partner</option>
-            <option value="other">Other</option>
-          </select>
-          {errors.role && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.role}</div>}
-        </div>
 
-        <div>
-          <label style={labelStyle}>Property Website *</label>
-          <input style={{ ...inputStyle, borderColor: errors.website ? '#C0392B' : '#D0C9C0' }}
-            placeholder="meadowbrookinn.com" value={form.website} onChange={e => set('website', e.target.value)} />
-          {errors.website && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>Required — helps us pre-research your property</div>}
-          <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>Enables property pre-research before your inquiry</div>
-        </div>
 
       </div>
 
