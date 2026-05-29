@@ -167,7 +167,7 @@ export default function Calculator() {
             {
               label: 'Total Repayment Cap',
               value: fmt(result.totalRepayment),
-              sub: `${result.capMultiple}× advance`
+              sub: `Capped at ${result.capMultiple}× of amount funded`
             },
             {
               label: 'Est. Payback Period',
@@ -176,7 +176,7 @@ export default function Calculator() {
             },
             {
               label: 'Est. Additional Annual Revenue',
-              value: `+${fmt(result.addlRevenueConservative)}`,
+              value: `+${fmt(result.addlRevenueConservative)} – ${fmt(result.addlRevenueBase)}`,
               sub: `${result.liftRangeLow}–${result.liftRangeHigh}% revenue lift range`
             },
           ].map(({ label, value, sub }) => (
