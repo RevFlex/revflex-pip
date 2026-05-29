@@ -163,29 +163,32 @@ export default function Calculator() {
 
         {/* Key stats — 3 cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
-          {[
-            {
-              label: 'Total Repayment Cap',
-              value: fmt(result.totalRepayment),
-              sub: `Capped at ${result.capMultiple}× of amount funded`
-            },
-            {
-              label: 'Est. Payback Period',
-              value: `${result.paybackYrsBase}–${result.paybackYrsConservative} yrs`,
-              sub: `At ${pct(result.shareRate)} gross revenue share`
-            },
-            {
-              label: 'Est. Additional Annual Revenue',
-              value: `+${fmt(result.addlRevenueConservative)} – ${fmt(result.addlRevenueBase)}`,
-              sub: `${result.liftRangeLow}–${result.liftRangeHigh}% revenue lift range`
-            },
-          ].map(({ label, value, sub }) => (
-            <div key={label} style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>{label}</div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}>{value}</div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '4px' }}>{sub}</div>
+          {/* Card 1 */}
+          <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment Cap</div>
+            <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}>{fmt(result.totalRepayment)}</div>
             </div>
-          ))}
+            <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Capped at {result.capMultiple}× of amount funded</div>
+          </div>
+          {/* Card 2 */}
+          <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Payback Period</div>
+            <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}>{result.paybackYrsBase}–{result.paybackYrsConservative} yrs</div>
+            </div>
+            <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>At {pct(result.shareRate)} gross revenue share</div>
+          </div>
+          {/* Card 3 — two lines, same fixed height container */}
+          <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Added Annual Revenue</div>
+            <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1.6', textAlign: 'center' }}>
+                {fmt(result.addlRevenueConservative)}<br />{fmt(result.addlRevenueBase)}
+              </div>
+            </div>
+            <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>{result.liftRangeLow}–{result.liftRangeHigh}% revenue lift range</div>
+          </div>
         </div>
 
         {/* Disclaimer + CTA */}
