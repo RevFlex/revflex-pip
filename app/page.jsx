@@ -277,21 +277,6 @@ export default function Home() {
       {/* ── CALCULATOR ── */}
       <section id="estimate" style={{ background: '#F3EEE7', padding: '88px 32px' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-          <div style={{
-            fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: '#9A8A7A', marginBottom: '14px', fontWeight: '600'
-          }}>Estimate</div>
-          <h2 style={{
-            fontFamily: "'Libre Baskerville', serif",
-            fontSize: 'clamp(26px, 3.5vw, 40px)',
-            fontWeight: '400', lineHeight: '1.25',
-            color: '#1A1D1A', marginBottom: '12px'
-          }}>
-            Start with a simple estimate.
-          </h2>
-          <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7', marginBottom: '40px' }}>
-            Just a few inputs to see your available RevFlex financing amount. This is not a commitment or approval — only an initial estimate.
-          </p>
           <Calculator />
         </div>
       </section>
