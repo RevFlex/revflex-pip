@@ -14,7 +14,7 @@ export default function Home() {
         padding: '0 32px', height: '64px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
-        <Image src="/logo-dark.png" alt="RevFlex" width={120} height={36} style={{ objectFit: 'contain', height: '36px', width: 'auto' }} priority />
+        <Image src="/logo-dark.png" alt="RevFlex" width={160} height={48} style={{ objectFit: 'contain', height: '44px', width: 'auto' }} priority />
         <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
           <a href="#how-it-works" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>How It Works</a>
           <a href="#estimate" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>Estimate</a>
