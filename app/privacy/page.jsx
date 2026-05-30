@@ -26,11 +26,11 @@ export default function Privacy() {
     },
     {
       title: '7. Data Retention',
-      body: 'We retain personal information for as long as necessary to fulfill the purposes outlined in this policy or as required by law. You may request deletion of your personal information by contacting us at our contact form at revflex.co/contact.'
+      body: 'We retain personal information for as long as necessary to fulfill the purposes outlined in this policy or as required by law. You may request deletion of your personal information by contacting us using the contact form on our website.'
     },
     {
       title: '8. Your Rights',
-      body: 'Depending on your jurisdiction, you may have the right to access, correct, or delete personal information we hold about you. To exercise these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a>. We will respond to your request within a reasonable timeframe.'
+      body: 'Depending on your jurisdiction, you may have the right to access, correct, or delete personal information we hold about you. To exercise these rights, please contact us using the contact form on our website. We will respond to your request within a reasonable timeframe.'
     },
     {
       title: '9. Changes to This Policy',
@@ -38,7 +38,7 @@ export default function Privacy() {
     },
     {
       title: '10. Contact',
-      body: 'If you have questions or concerns about this Privacy Policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
+      body: 'If you have questions or concerns about this Privacy Policy, please use the contact form on our website.'
     },
   ]
 
@@ -54,7 +54,12 @@ export default function Privacy() {
         {sections.map(({ title, body }) => (
           <div key={title} style={{ marginBottom: '36px' }}>
             <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
-            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>{body}</p>
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>
+              {body}{' '}
+              {(title.includes('8.') || title.includes('10.')) && (
+                <a href="/contact" style={{ color: '#C27C4E', textDecoration: 'none' }}>Contact us here →</a>
+              )}
+            </p>
           </div>
         ))}
         <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
