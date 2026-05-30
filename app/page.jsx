@@ -284,6 +284,7 @@ export default function Home() {
           <div style={{ display: 'flex', gap: '20px', fontSize: '12px', color: '#9A8A7A' }}>
             <a href="/terms" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Terms of Service</a>
             <a href="/privacy" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="/cookies" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Cookie Policy</a>
             <a href="/disclaimer" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Forward-Looking Statements</a>
           </div>
           <div style={{ fontSize: '12px', color: '#B0A898' }}>© 2026 RevFlex. All rights reserved.</div>
