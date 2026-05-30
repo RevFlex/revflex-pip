@@ -26,7 +26,7 @@ export default function Disclaimer() {
     },
     {
       title: '7. Contact',
-      body: 'If you have questions about these disclosures, please contact us at hello@revflex.co.'
+      body: 'If you have questions about these disclosures, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
     },
   ]
 
@@ -52,4 +52,3 @@ export default function Disclaimer() {
     </main>
   )
 }
-
