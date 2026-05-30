@@ -1,36 +1,67 @@
-RevFlex
-Legal
-Privacy Policy
-Last updated: May 2026
+export default function Terms() {
+  const sections = [
+    {
+      title: '1. Acceptance of Terms',
+      body: 'By accessing or using the RevFlex website or any related services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services. RevFlex reserves the right to modify these terms at any time. Continued use of the site following any changes constitutes acceptance of those changes.'
+    },
+    {
+      title: '2. No Offer of Financing',
+      body: 'Nothing on this website constitutes an offer, solicitation, or commitment to provide financing, credit, or any financial product. All information, estimates, and calculator outputs are provided for illustrative and informational purposes only. Actual financing terms, if any, are subject to full underwriting review, documentation, eligibility determination, and final approval by RevFlex. RevFlex is under no obligation to provide financing to any individual or entity.'
+    },
+    {
+      title: '3. Use of the Website',
+      body: 'You agree to use this website only for lawful purposes and in a manner that does not infringe the rights of others. You may not use this site to transmit any harmful, offensive, or disruptive content. RevFlex reserves the right to restrict or terminate access to the website at its sole discretion.'
+    },
+    {
+      title: '4. Intellectual Property',
+      body: 'All content on this website, including but not limited to text, graphics, logos, and software, is the property of RevFlex or its licensors and is protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works from any content on this site without prior written permission from RevFlex.'
+    },
+    {
+      title: '5. Disclaimer of Warranties',
+      body: 'This website and all content are provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. RevFlex does not warrant that the website will be uninterrupted, error-free, or free of viruses or other harmful components.'
+    },
+    {
+      title: '6. Limitation of Liability',
+      body: 'To the fullest extent permitted by law, RevFlex shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of, or inability to use, this website or its content. This includes, without limitation, reliance on any information provided on this site or any interruption in service.'
+    },
+    {
+      title: '7. Third-Party Links',
+      body: 'This website may contain links to third-party websites. These links are provided for convenience only. RevFlex does not endorse and is not responsible for the content, accuracy, or practices of any third-party websites.'
+    },
+    {
+      title: '8. Governing Law',
+      body: 'These Terms of Service shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in Delaware.'
+    },
+    {
+      title: '9. Contact',
+      body: 'If you have questions about these Terms of Service, please contact us using the contact form on our website.'
+    },
+  ]
 
-1. Information We Collect
-When you use the RevFlex website, we may collect information you voluntarily provide, including your name, email address, property name, property website, and other details entered into our estimate form. We also collect standard usage data such as IP addresses, browser type, and pages visited through cookies and similar technologies.
-
-2. How We Use Your Information
-We use the information you provide to respond to your inquiries, evaluate potential financing opportunities, communicate with you about RevFlex products and updates, and improve our website and services. We do not sell, rent, or trade your personal information to third parties for their marketing purposes.
-
-3. Estimate Form Data
-Information submitted through our financing estimate form — including property details, room count, ADR, occupancy, and project scope — is used solely to generate an illustrative estimate and to facilitate follow-up communication. This data is not shared with third-party lenders or data brokers without your consent.
-
-4. Cookies and Tracking
-Our website may use cookies and similar tracking technologies to understand how visitors use our site and to improve the user experience. You may disable cookies through your browser settings, though this may affect certain functionality of the site.
-
-5. Data Security
-We take reasonable measures to protect the information you provide from unauthorized access, disclosure, or misuse. However, no method of transmission over the internet or electronic storage is completely secure, and we cannot guarantee absolute security.
-
-6. Third-Party Services
-Our website may use third-party services for hosting, analytics, and communications. These service providers may have access to your information only as necessary to perform their functions and are obligated to protect it. We are not responsible for the privacy practices of third-party websites linked from our site.
-
-7. Data Retention
-We retain personal information for as long as necessary to fulfill the purposes outlined in this policy or as required by law. You may request deletion of your personal information by contacting us at our contact form at revflex.co/contact.
-
-8. Your Rights
-Depending on your jurisdiction, you may have the right to access, correct, or delete personal information we hold about you. To exercise these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a>. We will respond to your request within a reasonable timeframe.
-
-9. Changes to This Policy
-We may update this Privacy Policy from time to time. We will notify you of significant changes by posting the updated policy on this page with a revised date. Continued use of the site following changes constitutes acceptance of the updated policy.
-
-10. Contact
-If you have questions or concerns about this Privacy Policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.
-
-← Back to RevFlex
+  return (
+    <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A', minHeight: '100vh' }}>
+      <nav style={{ borderBottom: '1px solid #E8E4DE', padding: '0 32px', height: '64px', display: 'flex', alignItems: 'center' }}>
+        <a href="/" style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '20px', color: '#1A1D1A', textDecoration: 'none' }}>RevFlex</a>
+      </nav>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '72px 32px' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '16px', fontWeight: '600' }}>Legal</div>
+        <h1 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '400', marginBottom: '12px', lineHeight: '1.2' }}>Terms of Service</h1>
+        <p style={{ fontSize: '13px', color: '#9A8A7A', marginBottom: '48px' }}>Last updated: May 2026</p>
+        {sections.map(({ title, body }) => (
+          <div key={title} style={{ marginBottom: '36px' }}>
+            <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>
+              {body}{' '}
+              {(title.toLowerCase().includes('contact')) && (
+                <a href="/contact" style={{ color: '#C27C4E', textDecoration: 'none' }}>Contact us →</a>
+              )}
+            </p>
+          </div>
+        ))}
+        <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
+          <a href="/" style={{ fontSize: '14px', color: '#C27C4E', textDecoration: 'none' }}>← Back to RevFlex</a>
+        </div>
+      </div>
+    </main>
+  )
+}
