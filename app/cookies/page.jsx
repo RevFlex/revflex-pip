@@ -34,11 +34,11 @@ export default function Cookies() {
     },
     {
       title: '9. California Residents — Your Privacy Rights',
-      body: 'If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA). These include: the right to know what personal information we collect, use, disclose, and sell; the right to delete personal information we have collected from you, subject to certain exceptions; the right to opt out of the sale or sharing of your personal information (RevFlex does not sell personal information); the right to non-discrimination for exercising your privacy rights; and the right to correct inaccurate personal information. To exercise any of these rights, please contact us at hello@revflex.co with the subject line "California Privacy Request." We will respond within 45 days as required by law. You may also designate an authorized agent to make a request on your behalf. RevFlex does not sell or share personal information as defined under California law, and does not use sensitive personal information for purposes beyond those permitted under the CPRA.'
+      body: 'If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA). These include: the right to know what personal information we collect, use, disclose, and sell; the right to delete personal information we have collected from you, subject to certain exceptions; the right to opt out of the sale or sharing of your personal information (RevFlex does not sell personal information); the right to non-discrimination for exercising your privacy rights; and the right to correct inaccurate personal information. To exercise any of these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a> with the subject line "California Privacy Request." We will respond within 45 days as required by law. You may also designate an authorized agent to make a request on your behalf. RevFlex does not sell or share personal information as defined under California law, and does not use sensitive personal information for purposes beyond those permitted under the CPRA.'
     },
     {
       title: '10. Contact',
-      body: 'If you have questions about our use of cookies or this policy, please contact us at hello@revflex.co.'
+      body: 'If you have questions about our use of cookies or this policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
     },
   ]
 
@@ -64,4 +64,3 @@ export default function Cookies() {
     </main>
   )
 }
-
