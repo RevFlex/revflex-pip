@@ -1,66 +1,323 @@
-export default function Cookies() {
-  const sections = [
-    {
-      title: '1. What Are Cookies',
-      body: 'Cookies are small text files that are placed on your device when you visit a website. They are widely used to make websites work more efficiently, remember your preferences, and provide information to website owners about how their site is being used.'
-    },
-    {
-      title: '2. How RevFlex Uses Cookies',
-      body: 'RevFlex uses cookies and similar tracking technologies to understand how visitors interact with our website, remember form inputs during a single session, and improve the overall user experience. We do not use cookies to serve advertising or to track you across third-party websites.'
-    },
-    {
-      title: '3. Types of Cookies We Use',
-      body: 'Strictly necessary cookies: These are required for the website to function and cannot be disabled. They include session cookies that maintain your state as you navigate the site. Analytics cookies: We may use anonymized analytics tools to understand page views, session duration, and navigation patterns. These cookies do not identify you personally. Preference cookies: These remember settings you have chosen, such as form inputs during a session, so you do not have to re-enter them.'
-    },
-    {
-      title: '4. Third-Party Cookies',
-      body: 'Our website may be hosted or supported by third-party services including Vercel (hosting and performance). These providers may set their own cookies as part of delivering their services. We do not control third-party cookies and recommend reviewing the privacy policies of any third-party services.'
-    },
-    {
-      title: '5. Managing Cookies',
-      body: 'You can control and manage cookies through your browser settings. Most browsers allow you to refuse cookies, delete existing cookies, or be notified when a cookie is being set. Please note that disabling certain cookies may affect the functionality of our website. Instructions for managing cookies can be found in your browser\'s help documentation.'
-    },
-    {
-      title: '6. Cookie Retention',
-      body: 'Session cookies are deleted when you close your browser. Persistent cookies remain on your device for a set period or until you delete them manually. Analytics cookies, if used, are typically retained for no longer than 12 months.'
-    },
-    {
-      title: '7. Do Not Track',
-      body: 'Some browsers include a "Do Not Track" setting that signals websites not to track your browsing activity. Our website currently does not respond to Do Not Track signals, though we do not engage in cross-site tracking for advertising purposes.'
-    },
-    {
-      title: '8. Updates to This Policy',
-      body: 'We may update this Cookie Policy from time to time to reflect changes in technology, regulation, or our practices. We will post any changes on this page with an updated date. Continued use of our website following any changes constitutes acceptance of the updated policy.'
-    },
-    {
-      title: '9. California Residents — Your Privacy Rights',
-      body: 'If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA). These include: the right to know what personal information we collect, use, disclose, and sell; the right to delete personal information we have collected from you, subject to certain exceptions; the right to opt out of the sale or sharing of your personal information (RevFlex does not sell personal information); the right to non-discrimination for exercising your privacy rights; and the right to correct inaccurate personal information. To exercise any of these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a> with the subject line "California Privacy Request." We will respond within 45 days as required by law. You may also designate an authorized agent to make a request on your behalf. RevFlex does not sell or share personal information as defined under California law, and does not use sensitive personal information for purposes beyond those permitted under the CPRA.'
-    },
-    {
-      title: '10. Contact',
-      body: 'If you have questions about our use of cookies or this policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
-    },
-  ]
+'use client'
+
+import Image from 'next/image'
+import { useEffect, useRef } from 'react'
+import Calculator from '../components/Calculator'
+
+// ── Fade-up hook ─────────────────────────────────────────────────────────────
+function useFadeUp(delay = 0) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(24px)'
+    el.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`
+    if (typeof window === 'undefined') return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1'
+          el.style.transform = 'translateY(0)'
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [delay])
+  return ref
+}
+
+export default function Home() {
+  const heroRef = useFadeUp(0)
+  const challengeRef = useFadeUp(0)
+  const structureRef = useFadeUp(0)
+  const whyRef = useFadeUp(0)
+  const earlyRef = useFadeUp(0)
 
   return (
-    <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A', minHeight: '100vh' }}>
-      <nav style={{ borderBottom: '1px solid #E8E4DE', padding: '0 32px', height: '64px', display: 'flex', alignItems: 'center' }}>
-        <a href="/" style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '20px', color: '#1A1D1A', textDecoration: 'none' }}>RevFlex</a>
-      </nav>
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '72px 32px' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '16px', fontWeight: '600' }}>Legal</div>
-        <h1 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '400', marginBottom: '12px', lineHeight: '1.2' }}>Cookie Policy</h1>
-        <p style={{ fontSize: '13px', color: '#9A8A7A', marginBottom: '48px' }}>Last updated: May 2026</p>
-        {sections.map(({ title, body }) => (
-          <div key={title} style={{ marginBottom: '36px' }}>
-            <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
-            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>{body}</p>
-          </div>
-        ))}
-        <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
-          <a href="/" style={{ fontSize: '14px', color: '#C27C4E', textDecoration: 'none' }}>← Back to RevFlex</a>
+    <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A' }}>
+
+      {/* ── NAV ── */}
+      <nav style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: '#FAF8F4', borderBottom: '1px solid #E8E4DE',
+        padding: '0 32px', height: '64px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+      }}>
+        <Image src="/logo-dark.png" alt="RevFlex" width={160} height={48} style={{ objectFit: 'contain', height: '44px', width: 'auto' }} priority />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
+          <a href="#how-it-works" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>How It Works</a>
+          <a href="#estimate" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>Estimate</a>
+          <a href="#early-access" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>Early Access</a>
+          <a href="#estimate" style={{
+            background: '#C27C4E', color: '#fff',
+            fontSize: '13px', fontWeight: '500', letterSpacing: '0.03em',
+            padding: '10px 20px', borderRadius: '6px', textDecoration: 'none',
+            whiteSpace: 'nowrap'
+          }}>Check Eligibility</a>
         </div>
-      </div>
+      </nav>
+
+      {/* ── HERO ── */}
+      <section style={{ maxWidth: '900px', margin: '0 auto', padding: '96px 32px 80px', textAlign: 'center' }}>
+        <div ref={heroRef}>
+          <div style={{
+            display: 'inline-block',
+            background: '#F0EBE3', border: '1px solid #DDD6CC',
+            borderRadius: '20px', padding: '6px 14px',
+            fontSize: '12px', fontWeight: '500', color: '#7A6A5A',
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+            marginBottom: '28px'
+          }}>
+            Early Access — Now Accepting Inquiries
+          </div>
+
+          <h1 style={{
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: 'clamp(36px, 5vw, 60px)',
+            fontWeight: '400', lineHeight: '1.15',
+            color: '#1A1D1A', marginBottom: '24px', letterSpacing: '-0.01em'
+          }}>
+            Flexible capital for<br />hotel improvements.
+          </h1>
+
+          <p style={{
+            fontSize: '18px', lineHeight: '1.7', color: '#4A4E4A',
+            maxWidth: '580px', margin: '0 auto 40px'
+          }}>
+            RevFlex helps hotel owners fund property improvements with payments designed around your gross revenue.
+          </p>
+
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="#estimate" style={{
+              background: '#C27C4E', color: '#fff',
+              fontSize: '15px', fontWeight: '500',
+              padding: '14px 28px', borderRadius: '7px', textDecoration: 'none'
+            }}>
+              Check Your Eligibility
+            </a>
+            <a href="#how-it-works" style={{
+              background: 'transparent', color: '#1A1D1A',
+              fontSize: '15px', fontWeight: '400',
+              padding: '14px 28px', borderRadius: '7px', textDecoration: 'none',
+              border: '1px solid #D0C9C0'
+            }}>
+              See How It Works
+            </a>
+          </div>
+
+          <div style={{
+            display: 'flex', gap: '32px', justifyContent: 'center', flexWrap: 'wrap',
+            marginTop: '52px', paddingTop: '40px', borderTop: '1px solid #E8E4DE'
+          }}>
+            {[
+              { label: 'Revenue-aligned repayment', sub: "Flexes with hotel's revenue" },
+              { label: 'No personal guarantee', sub: 'Capital risk stays with us' },
+              { label: 'No franchise required', sub: 'All property types welcome' },
+            ].map(({ label, sub }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1D1A', marginBottom: '3px' }}>{label}</div>
+                <div style={{ fontSize: '13px', color: '#7A6A5A' }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CHALLENGE ── */}
+      <section id="how-it-works" style={{ background: '#F3EEE7', padding: '88px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={challengeRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Challenge</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '56px', maxWidth: '600px'
+            }}>
+              Traditional financing does not always fit hotel improvement cycles.
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
+              {[
+                { num: '01', title: 'Renovation costs are uneven', body: 'A soft-goods refresh is not the same as a full repositioning. Capital structures should reflect the scope, timeline, and expected return of the specific improvement.', delay: 0 },
+                { num: '02', title: 'Revenue lift takes time', body: 'Rate increases, review improvement, and guest perception do not happen overnight. Repayment should account for the ramp-up period after renovation completion.', delay: 100 },
+                { num: '03', title: 'Hotel cash flow is seasonal', body: 'Occupancy dips in shoulder seasons. Revenue fluctuates with weather, events, and market cycles. Fixed monthly payments ignore these realities.', delay: 200 },
+              ].map(({ num, title, body, delay }) => (
+                <FadeCard key={num} delay={delay}>
+                  <div style={{
+                    background: '#FAF8F4', borderRadius: '12px',
+                    padding: '32px', border: '1px solid #E0D9CF', height: '100%'
+                  }}>
+                    <div style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '48px', fontWeight: '400', color: '#DDD5C8', lineHeight: '1', marginBottom: '16px' }}>{num}</div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A1D1A', marginBottom: '10px', lineHeight: '1.3' }}>{title}</h3>
+                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: '#5A5E5A', margin: 0 }}>{body}</p>
+                  </div>
+                </FadeCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── STRUCTURE ── */}
+      <section style={{ padding: '88px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={structureRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Structure</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '16px', maxWidth: '600px'
+            }}>
+              Payments structured around revenue, not just a fixed payment schedule.
+            </h2>
+            <p style={{ fontSize: '16px', lineHeight: '1.7', color: '#4A4E4A', maxWidth: '560px', marginBottom: '56px' }}>
+              RevFlex provides flexible financing for qualified hotel improvement projects, with repayment tied to a percentage of gross revenue. When revenue dips seasonally, payments decrease. When revenue grows after renovation, repayment accelerates. Total obligation is capped, then the agreement ends.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+              {[
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>, title: 'Fast pre-qualified financing', sub: 'Target close in 2–3 weeks from qualified inquiry', delay: 0 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>, title: 'Lump sum at closing', sub: 'Full amount available for your property improvement', footnote: '*Certain restrictions may apply', delay: 50 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: 'No fixed interest rate', sub: 'A financing fee, not a compounding interest structure', delay: 100 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>, title: 'Fee based on revenue growth', sub: 'Repayment capped at 1.75× — then the agreement ends', delay: 150 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Payments from gross revenue', sub: 'A fixed percentage of gross revenue, collected monthly', delay: 200 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>, title: 'Brand or franchise not required', sub: 'Independent, boutique, and all property types welcome', delay: 250 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, title: 'No personal guarantees', sub: 'Capital risk stays with RevFlex, not with the operator', delay: 300 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, title: 'No equity dilution', sub: 'You keep full ownership. No warrants, no equity stake', delay: 350 },
+              ].map(({ icon, title, sub, footnote, delay }) => (
+                <FadeCard key={title} delay={delay}>
+                  <div style={{ background: '#FAF8F4', border: '1px solid #E8E4DE', borderRadius: '12px', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '10px', height: '100%' }}>
+                    <div style={{ lineHeight: '1' }}>{icon}</div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1A1D1A', lineHeight: '1.3' }}>{title}</div>
+                    <div style={{ fontSize: '13px', color: '#7A6A5A', lineHeight: '1.6' }}>{sub}</div>
+                    {footnote && <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '2px' }}>{footnote}</div>}
+                  </div>
+                </FadeCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CALCULATOR ── */}
+      <section id="estimate" style={{ background: '#F3EEE7', padding: '88px 32px' }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+          <Calculator />
+        </div>
+      </section>
+
+      {/* ── WHY REVFLEX ── */}
+      <section style={{ padding: '88px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={whyRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Why RevFlex</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '48px', maxWidth: '560px'
+            }}>
+              Built for the way hotel value is actually created.
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+              {[
+                { title: 'Hospitality-aware underwriting', body: 'We evaluate the project, property, market, revenue history, and improvement thesis — not a generic loan file.', delay: 0 },
+                { title: 'Revenue-aligned structure', body: 'Repayment flexes with hotel performance rather than forcing every property into the same fixed-payment model.', delay: 100 },
+                { title: 'Scope-specific thinking', body: 'A light soft-goods refresh is not the same as a full repositioning. RevFlex evaluates capital needs by scope, timeline, and expected return.', delay: 200 },
+                { title: 'Clear, disciplined capital', body: 'Transparent terms, defined use of proceeds, practical underwriting, and a capped total obligation. No hidden fees. No compounding.', delay: 300 },
+              ].map(({ title, body, delay }) => (
+                <FadeCard key={title} delay={delay}>
+                  <div>
+                    <div style={{ width: '32px', height: '3px', background: '#C27C4E', marginBottom: '16px', borderRadius: '2px' }} />
+                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h3>
+                    <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#5A5E5A', margin: 0 }}>{body}</p>
+                  </div>
+                </FadeCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── EARLY ACCESS ── */}
+      <section id="early-access" style={{ background: '#1A1D1A', padding: '88px 32px' }}>
+        <div ref={earlyRef} style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7A6A5A', marginBottom: '14px', fontWeight: '600' }}>Early Access</div>
+          <h2 style={{
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: 'clamp(26px, 3.5vw, 40px)',
+            fontWeight: '400', lineHeight: '1.25',
+            color: '#FAF8F4', marginBottom: '20px'
+          }}>
+            We are building RevFlex with hotel owners and operators.
+          </h2>
+          <p style={{ fontSize: '16px', lineHeight: '1.75', color: '#9A9E9A', marginBottom: '36px' }}>
+            RevFlex is currently in early development. We are speaking with hotel owners, operators, and capital partners to refine the model. If you have a property improvement in mind, we would like to hear from you.
+          </p>
+          <a href="#estimate" style={{
+            display: 'inline-block', background: '#C27C4E', color: '#fff',
+            fontSize: '15px', fontWeight: '500',
+            padding: '14px 28px', borderRadius: '7px', textDecoration: 'none'
+          }}>
+            Check Your Eligibility
+          </a>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#FAF8F4', borderTop: '1px solid #E8E4DE', padding: '40px 32px' }}>
+        <div style={{
+          maxWidth: '900px', margin: '0 auto',
+          display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center'
+        }}>
+          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '28px', width: 'auto', opacity: 0.7 }} />
+          <p style={{ fontSize: '12px', color: '#9A8A7A', lineHeight: '1.8', maxWidth: '600px' }}>
+            Revenue-aligned capital for hotel improvements. RevFlex is in development. Information provided on this website is for discussion purposes only and does not constitute a financing offer, commitment to lend, investment advice, or approval of credit. All financing is subject to underwriting, documentation, eligibility, and final approval. RevFlex is not a bank. Capital provided through revenue participation agreements.
+          </p>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '12px', color: '#9A8A7A', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <a href="/contact" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Contact</a>
+            <a href="/terms" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Terms of Service</a>
+            <a href="/privacy" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="/cookies" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Cookie Policy</a>
+            <a href="/disclaimer" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Forward-Looking Statements</a>
+          </div>
+          <div style={{ fontSize: '12px', color: '#B0A898' }}>© 2026 RevFlex. All rights reserved.</div>
+        </div>
+      </footer>
+
     </main>
   )
+}
+
+// ── FadeCard component ────────────────────────────────────────────────────────
+function FadeCard({ children, delay = 0 }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof window === 'undefined') return
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(20px)'
+    el.style.transition = `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1'
+          el.style.transform = 'translateY(0)'
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [delay])
+  return <div ref={ref}>{children}</div>
 }
