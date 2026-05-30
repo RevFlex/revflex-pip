@@ -34,4 +34,22 @@ export default function Disclaimer() {
     <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A', minHeight: '100vh' }}>
       <nav style={{ borderBottom: '1px solid #E8E4DE', padding: '0 32px', height: '64px', display: 'flex', alignItems: 'center' }}>
         <a href="/" style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '20px', color: '#1A1D1A', textDecoration: 'none' }}>RevFlex</a>
+      </nav>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '72px 32px' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '16px', fontWeight: '600' }}>Legal</div>
+        <h1 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '400', marginBottom: '12px', lineHeight: '1.2' }}>Forward-Looking Statements</h1>
+        <p style={{ fontSize: '13px', color: '#9A8A7A', marginBottom: '48px' }}>Last updated: May 2026</p>
+        {sections.map(({ title, body }) => (
+          <div key={title} style={{ marginBottom: '36px' }}>
+            <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>{body}</p>
+          </div>
+        ))}
+        <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
+          <a href="/" style={{ fontSize: '14px', color: '#C27C4E', textDecoration: 'none' }}>← Back to RevFlex</a>
+        </div>
+      </div>
+    </main>
+  )
+}
 
