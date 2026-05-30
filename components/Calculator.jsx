@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 // ─── Model constants (from RevFlex Underwriting Framework v1.5) ────────────
 // Share rates by deal tier
@@ -114,18 +114,20 @@ function useCountUp(target, duration = 1200, prefix = '$', suffix = '') {
   const [display, setDisplay] = useState(prefix + '0' + suffix)
   useEffect(() => {
     if (!target && target !== 0) return
+    if (typeof window === 'undefined') return
     const start = Date.now()
-    const isNumber = typeof target === 'number'
-    const end = isNumber ? target : parseFloat(target)
+    const end = typeof target === 'number' ? target : parseFloat(target)
+    let raf
     const tick = () => {
       const elapsed = Date.now() - start
       const progress = Math.min(elapsed / duration, 1)
       const ease = 1 - Math.pow(1 - progress, 3)
       const current = Math.round(end * ease)
       setDisplay(prefix + current.toLocaleString('en-US') + suffix)
-      if (progress < 1) requestAnimationFrame(tick)
+      if (progress < 1) raf = requestAnimationFrame(tick)
     }
-    requestAnimationFrame(tick)
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [target])
   return display
 }
