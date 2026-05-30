@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // ─── Model constants (from RevFlex Underwriting Framework v1.5) ────────────
 // Share rates by deal tier
@@ -109,6 +109,40 @@ const selectStyle = {
   backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', paddingRight: '36px',
 }
 
+// ── Count-up hook ─────────────────────────────────────────────────────────────
+function useCountUp(target, duration = 1200, prefix = '$', suffix = '') {
+  const [display, setDisplay] = useState(prefix + '0' + suffix)
+  useEffect(() => {
+    if (!target && target !== 0) return
+    const start = Date.now()
+    const isNumber = typeof target === 'number'
+    const end = isNumber ? target : parseFloat(target)
+    const tick = () => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / duration, 1)
+      const ease = 1 - Math.pow(1 - progress, 3)
+      const current = Math.round(end * ease)
+      setDisplay(prefix + current.toLocaleString('en-US') + suffix)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [target])
+  return display
+}
+
+
+// ── Animated result header ────────────────────────────────────────────────────
+function AnimatedAmount({ value }) {
+  const display = useCountUp(value, 1400, '$')
+  return <span>{display}</span>
+}
+
+function AnimatedStat({ value, prefix = '', suffix = '' }) {
+  const display = useCountUp(value, 1000, prefix, suffix)
+  return <span>{display}</span>
+}
+
+
 export default function Calculator() {
   const [form, setForm] = useState({
     propertyName: '', name: '', email: '', rooms: '', adr: '',
@@ -176,7 +210,7 @@ export default function Calculator() {
             Your Illustrative Estimate
           </div>
           <div style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '42px', fontWeight: '400', color: '#FAF8F4', lineHeight: '1' }}>
-            {fmt(result.advance)}
+            <AnimatedAmount value={result.advance} />
           </div>
           <div style={{ fontSize: '14px', color: '#7A8A7A', marginTop: '8px' }}>
             Estimated RevFlex financing capacity — {result.scopeLabel}
@@ -189,7 +223,7 @@ export default function Calculator() {
           <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment Cap</div>
             <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}>{fmt(result.totalRepayment)}</div>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1' }}><AnimatedAmount value={result.totalRepayment} /></div>
             </div>
             <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Capped at {result.capMultiple}× of amount funded</div>
           </div>
