@@ -26,11 +26,11 @@ export default function Privacy() {
     },
     {
       title: '7. Data Retention',
-      body: 'We retain personal information for as long as necessary to fulfill the purposes outlined in this policy or as required by law. You may request deletion of your personal information by contacting us at hello@revflex.co.'
+      body: 'We retain personal information for as long as necessary to fulfill the purposes outlined in this policy or as required by law. You may request deletion of your personal information by contacting us at our contact form at revflex.co/contact.'
     },
     {
       title: '8. Your Rights',
-      body: 'Depending on your jurisdiction, you may have the right to access, correct, or delete personal information we hold about you. To exercise these rights, please contact us at hello@revflex.co. We will respond to your request within a reasonable timeframe.'
+      body: 'Depending on your jurisdiction, you may have the right to access, correct, or delete personal information we hold about you. To exercise these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a>. We will respond to your request within a reasonable timeframe.'
     },
     {
       title: '9. Changes to This Policy',
@@ -38,7 +38,7 @@ export default function Privacy() {
     },
     {
       title: '10. Contact',
-      body: 'If you have questions or concerns about this Privacy Policy, please contact us at hello@revflex.co.'
+      body: 'If you have questions or concerns about this Privacy Policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
     },
   ]
 
@@ -64,4 +64,3 @@ export default function Privacy() {
     </main>
   )
 }
-
