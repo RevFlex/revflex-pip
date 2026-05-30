@@ -26,7 +26,7 @@ export default function Disclaimer() {
     },
     {
       title: '7. Contact',
-      body: 'If you have questions about these disclosures, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
+      body: 'If you have questions about these disclosures, please contact us using the contact form on our website.'
     },
   ]
 
@@ -42,7 +42,12 @@ export default function Disclaimer() {
         {sections.map(({ title, body }) => (
           <div key={title} style={{ marginBottom: '36px' }}>
             <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
-            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>{body}</p>
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>
+              {body}{' '}
+              {(title.toLowerCase().includes('contact')) && (
+                <a href="/contact" style={{ color: '#C27C4E', textDecoration: 'none' }}>Contact us →</a>
+              )}
+            </p>
           </div>
         ))}
         <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
