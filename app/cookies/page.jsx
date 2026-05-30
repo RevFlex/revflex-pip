@@ -34,11 +34,11 @@ export default function Cookies() {
     },
     {
       title: '9. California Residents — Your Privacy Rights',
-      body: 'If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA). These include: the right to know what personal information we collect, use, disclose, and sell; the right to delete personal information we have collected from you, subject to certain exceptions; the right to opt out of the sale or sharing of your personal information (RevFlex does not sell personal information); the right to non-discrimination for exercising your privacy rights; and the right to correct inaccurate personal information. To exercise any of these rights, please <a href="/contact" style="color: #C27C4E;">contact us here</a> with the subject line "California Privacy Request." We will respond within 45 days as required by law. You may also designate an authorized agent to make a request on your behalf. RevFlex does not sell or share personal information as defined under California law, and does not use sensitive personal information for purposes beyond those permitted under the CPRA.'
+      body: 'If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA). These include: the right to know what personal information we collect, use, disclose, and sell; the right to delete personal information we have collected from you, subject to certain exceptions; the right to opt out of the sale or sharing of your personal information (RevFlex does not sell personal information); the right to non-discrimination for exercising your privacy rights; and the right to correct inaccurate personal information. To exercise any of these rights, please contact us using the contact form on our website with the subject line "California Privacy Request." We will respond within 45 days as required by law. You may also designate an authorized agent to make a request on your behalf. RevFlex does not sell or share personal information as defined under California law, and does not use sensitive personal information for purposes beyond those permitted under the CPRA.'
     },
     {
       title: '10. Contact',
-      body: 'If you have questions about our use of cookies or this policy, please <a href="/contact" style="color: #C27C4E;">contact us here</a>.'
+      body: 'If you have questions about our use of cookies or this policy, please contact us using the contact form on our website.'
     },
   ]
 
@@ -54,7 +54,12 @@ export default function Cookies() {
         {sections.map(({ title, body }) => (
           <div key={title} style={{ marginBottom: '36px' }}>
             <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '18px', fontWeight: '400', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h2>
-            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>{body}</p>
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#4A4E4A', margin: 0 }}>
+              {body}{' '}
+              {(title.toLowerCase().includes('contact')) && (
+                <a href="/contact" style={{ color: '#C27C4E', textDecoration: 'none' }}>Contact us →</a>
+              )}
+            </p>
           </div>
         ))}
         <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid #E8E4DE' }}>
