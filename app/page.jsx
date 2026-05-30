@@ -13,6 +13,7 @@ function useFadeUp(delay = 0) {
     el.style.opacity = '0'
     el.style.transform = 'translateY(24px)'
     el.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`
+    if (typeof window === 'undefined') return
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -299,6 +300,7 @@ function FadeCard({ children, delay = 0 }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (typeof window === 'undefined') return
     el.style.opacity = '0'
     el.style.transform = 'translateY(20px)'
     el.style.transition = `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`
