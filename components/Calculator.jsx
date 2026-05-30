@@ -2,88 +2,6 @@
 
 import { useState, useEffect } from 'react'
 
-// ─── Model constants (from RevFlex Underwriting Framework v1.5) ────────────
-// Share rates by deal tier
-const TIERS = [
-  { min: 100000,  max: 500000,  shareRate: 0.07, termCap: 8  },
-  { min: 500001,  max: 1000000, shareRate: 0.075, termCap: 10 },
-  { min: 1000001, max: 2000000, shareRate: 0.08, termCap: 12 },
-  { min: 2000001, max: 3000000, shareRate: 0.085, termCap: 15 },
-]
-
-// Cap multiple + RevPAR lift range by scope (low, high)
-const SCOPES = {
-  soft:       { cap: 1.70, liftLow: 0.05, liftHigh: 0.12, label: 'Soft Goods Refresh' },
-  ffe:        { cap: 1.78, liftLow: 0.12, liftHigh: 0.22, label: 'FF&E Targeted' },
-  'ffe-common': { cap: 1.83, liftLow: 0.18, liftHigh: 0.30, label: 'FF&E + Common Areas' },
-  bath:       { cap: 1.83, liftLow: 0.18, liftHigh: 0.30, label: 'Bathroom + Hard Finish' },
-  full:       { cap: 1.88, liftLow: 0.30, liftHigh: 0.50, label: 'Full Repositioning' },
-  pip:        { cap: 1.78, liftLow: 0.12, liftHigh: 0.22, label: 'Brand PIP Compliance' },
-  other:      { cap: 1.75, liftLow: 0.10, liftHigh: 0.20, label: 'General Improvement' },
-}
-
-function getTier(advance) {
-  return TIERS.find(t => advance >= t.min && advance <= t.max) || TIERS[TIERS.length - 1]
-}
-
-function calcEstimate({ rooms, adr, occupancy, projectCost, projectScope }) {
-  const r = Number(rooms)
-  const a = Number(adr)
-  const o = Number(occupancy) / 100
-  const p = Number(projectCost)
-
-  if (!r || !a || !o || !p) return null
-
-  // Current annual gross room revenue
-  const annualRevenue = r * a * 365 * o
-
-  // Advance = project cost — no cap, operator enters what they need
-  const advance = Math.max(25000, p)
-
-  // Get tier-based share rate and term cap
-  const tier = getTier(advance)
-  const shareRate = tier.shareRate
-  const termCapYears = tier.termCap
-
-  // Get scope-based cap multiple and lift range
-  const scope = SCOPES[projectScope] || SCOPES['ffe']
-  const capMultiple = scope.cap
-  const totalRepayment = Math.round(advance * capMultiple)
-
-  // Post-PIP revenue — conservative (low lift) and base (midpoint lift)
-  const midLift = (scope.liftLow + scope.liftHigh) / 2
-  const postPIPRevenueConservative = annualRevenue * (1 + scope.liftLow)
-  const postPIPRevenueBase = annualRevenue * (1 + midLift)
-
-  // Annual repayment = post-PIP revenue × share rate
-  const annualRepaymentConservative = postPIPRevenueConservative * shareRate
-  const annualRepaymentBase = postPIPRevenueBase * shareRate
-
-  // Payback = total repayment cap ÷ annual repayment
-  const paybackYrsConservative = totalRepayment / annualRepaymentConservative
-  const paybackYrsBase = totalRepayment / annualRepaymentBase
-
-  // Additional annual revenue
-  const addlRevenueConservative = Math.round(postPIPRevenueConservative - annualRevenue)
-  const addlRevenueBase = Math.round(postPIPRevenueBase - annualRevenue)
-
-  return {
-    advance,
-    totalRepayment,
-    capMultiple,
-    shareRate,
-    termCapYears,
-    paybackYrsBase: Math.round(paybackYrsBase * 10) / 10,
-    paybackYrsConservative: Math.round(paybackYrsConservative * 10) / 10,
-    annualRevenue: Math.round(annualRevenue),
-    addlRevenueConservative,
-    addlRevenueBase,
-    scopeLabel: scope.label,
-    liftRangeLow: Math.round(scope.liftLow * 100),
-    liftRangeHigh: Math.round(scope.liftHigh * 100),
-  }
-}
-
 function fmt(n) {
   return '$' + Math.round(n).toLocaleString('en-US')
 }
@@ -153,6 +71,7 @@ export default function Calculator() {
   const [submitted, setSubmitted] = useState(false)
   const [result, setResult] = useState(null)
   const [errors, setErrors] = useState({})
+  const [loading, setLoading] = useState(false)
 
   function set(field, val) {
     setForm(f => ({ ...f, [field]: val }))
@@ -182,12 +101,31 @@ export default function Calculator() {
     window.location.href = `mailto:hello@revflex.co?subject=${subject}&body=${body}`
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const e = validate()
     if (Object.keys(e).length) { setErrors(e); return }
-    const est = calcEstimate({ ...form })
-    setResult(est)
-    setSubmitted(true)
+    setLoading(true)
+    try {
+      const response = await fetch('/api/estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rooms: form.rooms,
+          adr: form.adr,
+          occupancy: form.occupancy,
+          projectCost: form.projectCost,
+          projectScope: form.projectScope,
+        }),
+      })
+      if (!response.ok) throw new Error('Estimate failed')
+      const est = await response.json()
+      setResult(est)
+      setSubmitted(true)
+    } catch (err) {
+      setErrors({ submit: 'Something went wrong. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   // ── Result view ─────────────────────────────────────────────────────────
@@ -399,12 +337,14 @@ export default function Calculator() {
 
       </div>
 
-      <button onClick={handleSubmit} style={{
-        width: '100%', marginTop: '28px', background: '#C27C4E', color: '#fff',
+      {errors.submit && <div style={{ fontSize: '13px', color: '#C0392B', marginTop: '16px', textAlign: 'center' }}>{errors.submit}</div>}
+      <button onClick={handleSubmit} disabled={loading} style={{
+        width: '100%', marginTop: '28px', background: loading ? '#D4956E' : '#C27C4E', color: '#fff',
         fontSize: '15px', fontWeight: '500', padding: '14px', borderRadius: '7px',
-        border: 'none', cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.02em'
+        border: 'none', cursor: loading ? 'wait' : 'pointer', fontFamily: 'inherit', letterSpacing: '0.02em',
+        transition: 'background 0.2s ease'
       }}>
-        Estimate My RevFlex Financing →
+        {loading ? 'Calculating…' : 'Estimate My RevFlex Financing →'}
       </button>
 
       <p style={{ fontSize: '12px', color: '#B0A898', textAlign: 'center', marginTop: '14px', lineHeight: '1.6' }}>
