@@ -258,24 +258,25 @@ export default function Calculator() {
           </div>
 
           {/* 3 stat cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
+          <style>{`@media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr !important; } }`}</style>
+          <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
             <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment Cap</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ minHeight: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A' }}><AnimatedAmount value={result.totalRepayment} /></div>
               </div>
               <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Capped at {result.capMultiple}× of amount funded</div>
             </div>
             <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Payback Period</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ minHeight: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A' }}>{result.paybackYrsBase}–{result.paybackYrsConservative} yrs</div>
               </div>
               <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>At {pct(result.shareRate)} gross revenue share</div>
             </div>
             <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Added Annual Revenue</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ minHeight: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1.6', textAlign: 'center' }}>
                   {fmt(result.addlRevenueConservative)}<br />{fmt(result.addlRevenueBase)}
                 </div>
@@ -359,8 +360,9 @@ export default function Calculator() {
         </p>
       </div>
 
-      <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: '40px 36px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: 'clamp(24px, 5vw, 40px) clamp(20px, 5vw, 36px)' }}>
+        <style>{`@media (max-width: 520px) { .calc-grid { grid-template-columns: 1fr !important; } }`}</style>
+        <div className="calc-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={labelStyle}>Property Name</label>
