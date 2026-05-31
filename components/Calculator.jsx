@@ -1,460 +1,533 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
+import Calculator from '../components/Calculator'
 
-function fmt(n) {
-  return '$' + Math.round(n).toLocaleString('en-US')
-}
-function pct(n) {
-  return (n * 100).toFixed(1) + '%'
-}
-
-// ─── Styles ──────────────────────────────────────────────────────────────────
-const inputStyle = {
-  width: '100%', padding: '11px 14px', fontSize: '15px',
-  border: '1px solid #D0C9C0', borderRadius: '7px',
-  background: '#FAF8F4', color: '#1A1D1A', outline: 'none',
-  boxSizing: 'border-box', fontFamily: 'inherit',
-}
-const labelStyle = {
-  display: 'block', fontSize: '11px', fontWeight: '600',
-  letterSpacing: '0.1em', textTransform: 'uppercase',
-  color: '#7A6A5A', marginBottom: '6px',
-}
-const selectStyle = {
-  ...inputStyle, appearance: 'none',
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A6A5A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', paddingRight: '36px',
-}
-
-// ── Count-up hook ─────────────────────────────────────────────────────────────
-function useCountUp(target, duration = 1200, prefix = '$', suffix = '') {
-  const [display, setDisplay] = useState(prefix + '0' + suffix)
+// ── Fade-up hook ─────────────────────────────────────────────────────────────
+function useFadeUp(delay = 0) {
+  const ref = useRef(null)
   useEffect(() => {
-    if (!target && target !== 0) return
+    const el = ref.current
+    if (!el) return
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(24px)'
+    el.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`
     if (typeof window === 'undefined') return
-    const start = Date.now()
-    const end = typeof target === 'number' ? target : parseFloat(target)
-    let raf
-    const tick = () => {
-      const elapsed = Date.now() - start
-      const progress = Math.min(elapsed / duration, 1)
-      const ease = 1 - Math.pow(1 - progress, 3)
-      const current = Math.round(end * ease)
-      setDisplay(prefix + current.toLocaleString('en-US') + suffix)
-      if (progress < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [target])
-  return display
-}
-
-function AnimatedAmount({ value }) {
-  const display = useCountUp(value, 1400, '$')
-  return <span>{display}</span>
-}
-
-// ── Validation helpers ────────────────────────────────────────────────────────
-function cleanWebsite(val) {
-  return val.trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/$/, '')
-}
-function isValidWebsite(val) {
-  const cleaned = cleanWebsite(val)
-  return /^[a-zA-Z0-9][a-zA-Z0-9-_.]+\.[a-zA-Z]{2,}/.test(cleaned)
-}
-function isValidEmail(val) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val.trim())
-}
-
-export default function Calculator() {
-  const [form, setForm] = useState({
-    propertyName: '', website: '', rooms: '', adr: '',
-    occupancy: '', projectScope: '', projectCost: '',
-    timeline: '', name: '', email: '', role: '',
-    _hp: '', // honeypot — hidden from humans
-  })
-  const [submitted, setSubmitted] = useState(false)
-  const [inquirySent, setInquirySent] = useState(false)
-  const [result, setResult] = useState(null)
-  const [errors, setErrors] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [inquiryLoading, setInquiryLoading] = useState(false)
-
-  function set(field, val) {
-    setForm(f => ({ ...f, [field]: val }))
-    setErrors(e => ({ ...e, [field]: undefined }))
-  }
-
-  function validateCalc() {
-    const e = {}
-    if (!form.rooms || Number(form.rooms) < 1) e.rooms = 'Required'
-    if (!form.adr || Number(form.adr) < 1) e.adr = 'Required'
-    if (!form.occupancy) e.occupancy = 'Required'
-    else if (Number(form.occupancy) < 1 || Number(form.occupancy) > 100) e.occupancy = 'Enter 1–100'
-    if (!form.projectCost || Number(form.projectCost) < 1) e.projectCost = 'Required'
-    if (!form.projectScope) e.projectScope = 'Required'
-    if (!form.website.trim()) e.website = 'Required'
-    else if (!isValidWebsite(form.website)) e.website = 'Enter a valid website (e.g. meadowbrookinn.com)'
-    return e
-  }
-
-  function validateInquiry() {
-    const e = {}
-    if (!form.name.trim()) e.name = 'Required'
-    if (!form.email.trim()) e.email = 'Required'
-    else if (!isValidEmail(form.email)) e.email = 'Enter a valid email address'
-    return e
-  }
-
-  async function handleSubmit() {
-    const e = validateCalc()
-    if (Object.keys(e).length) { setErrors(e); return }
-    if (form._hp) return // honeypot triggered — silently reject
-    setLoading(true)
-    try {
-      const response = await fetch('/api/estimate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          rooms: form.rooms,
-          adr: form.adr,
-          occupancy: form.occupancy,
-          projectCost: form.projectCost,
-          projectScope: form.projectScope,
-        }),
-      })
-      if (!response.ok) throw new Error('Estimate failed')
-      const est = await response.json()
-      setResult(est)
-      setSubmitted(true)
-
-      // Silently capture partial lead (calculator only — no name/email yet)
-      fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'calculator_only',
-          propertyName: form.propertyName,
-          website: cleanWebsite(form.website),
-          rooms: form.rooms,
-          adr: form.adr,
-          occupancy: form.occupancy,
-          projectCost: form.projectCost,
-          projectScope: form.projectScope,
-          timeline: form.timeline,
-          estimate: est,
-          _hp: form._hp,
-        }),
-      }).catch(() => {}) // silent — don't block UX
-
-    } catch (err) {
-      setErrors({ submit: 'Something went wrong. Please try again.' })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleInquiry() {
-    const e = validateInquiry()
-    if (Object.keys(e).length) { setErrors(e); return }
-    if (form._hp) return // honeypot
-    setInquiryLoading(true)
-    try {
-      const response = await fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'full_inquiry',
-          name: form.name.trim(),
-          email: form.email.trim(),
-          role: form.role,
-          propertyName: form.propertyName,
-          website: cleanWebsite(form.website),
-          rooms: form.rooms,
-          adr: form.adr,
-          occupancy: form.occupancy,
-          projectCost: form.projectCost,
-          projectScope: form.projectScope,
-          timeline: form.timeline,
-          estimate: result,
-          _hp: form._hp,
-        }),
-      })
-      if (!response.ok) throw new Error('Submission failed')
-      setInquirySent(true)
-    } catch (err) {
-      setErrors({ inquiry: 'Something went wrong. Please try again.' })
-    } finally {
-      setInquiryLoading(false)
-    }
-  }
-
-  function reset() {
-    setSubmitted(false)
-    setInquirySent(false)
-    setResult(null)
-    setErrors({})
-    setForm({ propertyName: '', website: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', name: '', email: '', role: '', _hp: '' })
-  }
-
-  // ── Success view ─────────────────────────────────────────────────────────
-  if (inquirySent) {
-    return (
-      <div>
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
-          <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
-            You're on the list.
-          </h2>
-          <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-            We've received your inquiry for {form.propertyName || 'your property'}. We'll be in touch as we select our founding properties.
-          </p>
-        </div>
-        <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: '36px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#F0EBE3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: '15px', fontWeight: '600', color: '#1A1D1A' }}>Request received</div>
-              <div style={{ fontSize: '13px', color: '#7A6A5A', marginTop: '2px' }}>Estimated financing: {fmt(result.advance)} — {result.scopeLabel}</div>
-            </div>
-          </div>
-          <button onClick={reset} style={{ fontSize: '13px', color: '#C27C4E', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
-            Run another estimate →
-          </button>
-        </div>
-      </div>
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1'
+          el.style.transform = 'translateY(0)'
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
     )
-  }
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [delay])
+  return ref
+}
 
-  // ── Result view ─────────────────────────────────────────────────────────
-  if (submitted && result) {
-    return (
-      <div>
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
-          <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
-            {form.propertyName ? `Here's your estimate, ${form.propertyName}.` : "Here's your estimate."}
-          </h2>
-          <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-            Ready to continue? Enter your details below to request early access — we'll be in touch as we select our founding properties.
+export default function Home() {
+  const heroRef = useFadeUp(0)
+  const challengeRef = useFadeUp(0)
+  const structureRef = useFadeUp(0)
+  const whyRef = useFadeUp(0)
+  const earlyRef = useFadeUp(0)
+
+  return (
+    <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A' }}>
+
+      {/* ── NAV ── */}
+      <Nav />
+
+      {/* ── HERO ── */}
+      <section style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px) clamp(48px, 6vw, 80px)', textAlign: 'center' }}>
+        <div ref={heroRef}>
+          <div style={{
+            display: 'inline-block',
+            background: '#F0EBE3', border: '1px solid #DDD6CC',
+            borderRadius: '20px', padding: '6px 14px',
+            fontSize: '12px', fontWeight: '500', color: '#7A6A5A',
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+            marginBottom: '28px'
+          }}>
+            Early Access — Now Accepting Inquiries
+          </div>
+
+          <h1 style={{
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: 'clamp(36px, 5vw, 60px)',
+            fontWeight: '400', lineHeight: '1.15',
+            color: '#1A1D1A', marginBottom: '24px', letterSpacing: '-0.01em'
+          }}>
+            Flexible capital for<br />hotel improvements.
+          </h1>
+
+          <p style={{
+            fontSize: '18px', lineHeight: '1.7', color: '#4A4E4A',
+            maxWidth: '580px', margin: '0 auto 40px'
+          }}>
+            RevFlex helps hotel owners fund property improvements with payments designed around your gross revenue.
           </p>
+
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="#estimate" style={{
+              background: '#C27C4E', color: '#fff',
+              fontSize: '15px', fontWeight: '500',
+              padding: '14px 28px', borderRadius: '7px', textDecoration: 'none'
+            }}>
+              Check Your Eligibility
+            </a>
+            <a href="#how-it-works" style={{
+              background: 'transparent', color: '#1A1D1A',
+              fontSize: '15px', fontWeight: '400',
+              padding: '14px 28px', borderRadius: '7px', textDecoration: 'none',
+              border: '1px solid #D0C9C0'
+            }}>
+              See How It Works
+            </a>
+          </div>
+
+          <div style={{
+            display: 'flex', gap: '32px', justifyContent: 'center', flexWrap: 'wrap',
+            marginTop: '52px', paddingTop: '40px', borderTop: '1px solid #E8E4DE'
+          }}>
+            {[
+              { label: 'Revenue-aligned repayment', sub: "Flexes with the hotel's revenue" },
+              { label: 'No personal guarantee', sub: 'Capital risk stays with us' },
+              { label: 'No franchise required', sub: 'All property types welcome' },
+            ].map(({ label, sub }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1D1A', marginBottom: '3px' }}>{label}</div>
+                <div style={{ fontSize: '13px', color: '#7A6A5A' }}>{sub}</div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', overflow: 'hidden' }}>
-          {/* Header */}
-          <div style={{ background: '#1A1D1A', padding: '32px 36px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '6px', fontWeight: '600' }}>Your Illustrative Estimate</div>
-            <div style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '42px', fontWeight: '400', color: '#FAF8F4', lineHeight: '1' }}>
-              <AnimatedAmount value={result.advance} />
-            </div>
-            <div style={{ fontSize: '14px', color: '#7A8A7A', marginTop: '8px' }}>
-              Estimated RevFlex financing — {result.scopeLabel}
+      {/* ── CHALLENGE ── */}
+      <section id="how-it-works" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={challengeRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Challenge</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '56px', maxWidth: '600px'
+            }}>
+              Traditional financing does not always fit hotel improvement cycles.
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
+              {[
+                { num: '01', title: 'Renovation costs are uneven', body: 'A soft-goods refresh is not the same as a full repositioning. Capital structures should reflect the scope, timeline, and expected return of the specific improvement.', delay: 0 },
+                { num: '02', title: 'Revenue lift takes time', body: 'Rate increases, review improvement, and guest perception do not happen overnight. Repayment should account for the ramp-up period after renovation completion.', delay: 100 },
+                { num: '03', title: 'Hotel cash flow is seasonal', body: 'Occupancy dips in shoulder seasons. Revenue fluctuates with weather, events, and market cycles. Fixed monthly payments ignore these realities.', delay: 200 },
+              ].map(({ num, title, body, delay }) => (
+                <FadeCard key={num} delay={delay}>
+                  <div style={{
+                    background: '#FAF8F4', borderRadius: '12px',
+                    padding: '32px', border: '1px solid #E0D9CF', height: '100%'
+                  }}>
+                    <div style={{ fontFamily: "'Libre Baskerville', serif", fontSize: '48px', fontWeight: '400', color: '#DDD5C8', lineHeight: '1', marginBottom: '16px' }}>{num}</div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A1D1A', marginBottom: '10px', lineHeight: '1.3' }}>{title}</h3>
+                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: '#5A5E5A', margin: 0 }}>{body}</p>
+                  </div>
+                </FadeCard>
+              ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* 3 stat cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
-            <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment Cap</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A' }}><AnimatedAmount value={result.totalRepayment} /></div>
-              </div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Capped at {result.capMultiple}× of amount funded</div>
-            </div>
-            <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Payback Period</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A' }}>{result.paybackYrsBase}–{result.paybackYrsConservative} yrs</div>
-              </div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>At {pct(result.shareRate)} gross revenue share</div>
-            </div>
-            <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Added Annual Revenue</div>
-              <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1.6', textAlign: 'center' }}>
-                  {fmt(result.addlRevenueConservative)}<br />{fmt(result.addlRevenueBase)}
-                </div>
-              </div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>{result.liftRangeLow}–{result.liftRangeHigh}% revenue lift range</div>
-            </div>
-          </div>
-
-          {/* Inquiry form */}
-          <div style={{ padding: '28px 36px' }}>
-            <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic' }}>
-              Illustrative estimate only. Actual financing, share rate, and repayment cap are subject to full underwriting, property review, and RevFlex approval. Revenue uplift projections are based on comparable market benchmarks and are not guaranteed.
+      {/* ── STRUCTURE ── */}
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={structureRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Structure</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '16px', maxWidth: '600px'
+            }}>
+              Payments structured around revenue, not just a fixed payment schedule.
+            </h2>
+            <p style={{ fontSize: '16px', lineHeight: '1.7', color: '#4A4E4A', maxWidth: '560px', marginBottom: '56px' }}>
+              RevFlex provides flexible financing for qualified hotel improvement projects, with repayment tied to a percentage of gross revenue. When revenue dips seasonally, payments decrease. When revenue grows after renovation, repayment accelerates. Total obligation is capped, then the agreement ends.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-              <div>
-                <label style={labelStyle}>Your Name *</label>
-                <input style={{ ...inputStyle, borderColor: errors.name ? '#C0392B' : '#D0C9C0' }}
-                  placeholder="Jane Smith" value={form.name} onChange={e => set('name', e.target.value)} />
-                {errors.name && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.name}</div>}
-              </div>
-              <div>
-                <label style={labelStyle}>Email Address *</label>
-                <input style={{ ...inputStyle, borderColor: errors.email ? '#C0392B' : '#D0C9C0' }}
-                  type="email" placeholder="jane@meadowbrookinn.com" value={form.email} onChange={e => set('email', e.target.value)} />
-                {errors.email && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.email}</div>}
-              </div>
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>I Am A…</label>
-                <select style={selectStyle} value={form.role} onChange={e => set('role', e.target.value)}>
-                  <option value="">Select your role…</option>
-                  <option value="owner">Hotel owner</option>
-                  <option value="operator">Operator / management company</option>
-                  <option value="developer">Developer</option>
-                  <option value="broker">Broker / advisor</option>
-                  <option value="capital">Capital partner</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Honeypot — hidden from humans, bots fill this in */}
-            <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
-              <input tabIndex="-1" value={form._hp} onChange={e => set('_hp', e.target.value)} autoComplete="off" />
-            </div>
-
-            {errors.inquiry && <div style={{ fontSize: '13px', color: '#C0392B', marginBottom: '16px' }}>{errors.inquiry}</div>}
-
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <button onClick={handleInquiry} disabled={inquiryLoading} style={{
-                background: inquiryLoading ? '#D4956E' : '#C27C4E', color: '#fff',
-                fontSize: '14px', fontWeight: '500', padding: '12px 24px',
-                borderRadius: '7px', border: 'none', cursor: inquiryLoading ? 'wait' : 'pointer',
-                fontFamily: 'inherit', transition: 'background 0.2s ease'
-              }}>
-                {inquiryLoading ? 'Submitting…' : 'Request Early Access →'}
-              </button>
-              <button onClick={reset} style={{
-                background: 'transparent', color: '#7A6A5A', fontSize: '14px',
-                padding: '12px 20px', border: '1px solid #D0C9C0', borderRadius: '7px', cursor: 'pointer'
-              }}>
-                Start Over
-              </button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+              {[
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>, title: 'Fast pre-qualified financing', sub: 'Target close in 2–3 weeks from qualified inquiry', delay: 0 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>, title: 'Lump sum at closing', sub: 'Full amount available for your property improvement', footnote: '*Certain restrictions may apply', delay: 50 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: 'No fixed interest rate', sub: 'A financing fee, not a compounding interest structure', delay: 100 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>, title: 'Fee based on revenue growth', sub: 'Repayment capped at 1.75× — then the agreement ends', delay: 150 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Payments from gross revenue', sub: 'A fixed percentage of gross revenue, collected monthly', delay: 200 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>, title: 'Brand or franchise not required', sub: 'Independent, boutique, and all property types welcome', delay: 250 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, title: 'No personal guarantees', sub: 'Capital risk stays with RevFlex, not with the operator', delay: 300 },
+                { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, title: 'No equity dilution', sub: 'You keep full ownership. No warrants, no equity stake', delay: 350 },
+              ].map(({ icon, title, sub, footnote, delay }) => (
+                <FadeCard key={title} delay={delay}>
+                  <div style={{ background: '#FAF8F4', border: '1px solid #E8E4DE', borderRadius: '12px', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '10px', height: '100%' }}>
+                    <div style={{ lineHeight: '1' }}>{icon}</div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1A1D1A', lineHeight: '1.3' }}>{title}</div>
+                    <div style={{ fontSize: '13px', color: '#7A6A5A', lineHeight: '1.6' }}>{sub}</div>
+                    {footnote && <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '2px' }}>{footnote}</div>}
+                  </div>
+                </FadeCard>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-    )
-  }
+      </section>
 
-  // ── Form view ────────────────────────────────────────────────────────────
-  return (
-    <div>
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
-        <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
-          Start with a simple estimate.
-        </h2>
-        <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-          Just a few inputs to see your available RevFlex financing amount. This is not a commitment or approval — only an initial estimate.
-        </p>
-      </div>
-
-      <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: '40px 36px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>Property Name</label>
-            <input style={inputStyle} placeholder="The Meadowbrook Inn" value={form.propertyName} onChange={e => set('propertyName', e.target.value)} />
-          </div>
-
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>Property Website *</label>
-            <input style={{ ...inputStyle, borderColor: errors.website ? '#C0392B' : '#D0C9C0' }}
-              placeholder="meadowbrookinn.com" value={form.website} onChange={e => set('website', e.target.value)} />
-            {errors.website && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.website}</div>}
-            <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>Enables property pre-research before your inquiry</div>
-          </div>
-
-          <div>
-            <label style={labelStyle}>Number of Rooms *</label>
-            <input style={{ ...inputStyle, borderColor: errors.rooms ? '#C0392B' : '#D0C9C0' }}
-              type="number" min="1" placeholder="24" value={form.rooms} onChange={e => set('rooms', e.target.value)} />
-            {errors.rooms && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.rooms}</div>}
-          </div>
-
-          <div>
-            <label style={labelStyle}>Current ADR ($) *</label>
-            <input style={{ ...inputStyle, borderColor: errors.adr ? '#C0392B' : '#D0C9C0' }}
-              type="number" min="1" placeholder="189" value={form.adr} onChange={e => set('adr', e.target.value)} />
-            {errors.adr && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.adr}</div>}
-            <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>Approximate figures are fine</div>
-          </div>
-
-          <div>
-            <label style={labelStyle}>Average Occupancy (%) *</label>
-            <input style={{ ...inputStyle, borderColor: errors.occupancy ? '#C0392B' : '#D0C9C0' }}
-              type="number" min="1" max="100" placeholder="62" value={form.occupancy} onChange={e => set('occupancy', e.target.value)} />
-            {errors.occupancy && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.occupancy}</div>}
-          </div>
-
-          <div>
-            <label style={labelStyle}>Estimated Project Cost ($) *</label>
-            <input style={{ ...inputStyle, borderColor: errors.projectCost ? '#C0392B' : '#D0C9C0' }}
-              type="number" min="1" placeholder="175000" value={form.projectCost} onChange={e => set('projectCost', e.target.value)} />
-            {errors.projectCost && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.projectCost}</div>}
-            <div style={{ fontSize: '11px', color: '#B0A898', marginTop: '4px' }}>A rough estimate is fine</div>
-          </div>
-
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>What Are You Improving? *</label>
-            <select style={{ ...selectStyle, borderColor: errors.projectScope ? '#C0392B' : '#D0C9C0' }}
-              value={form.projectScope} onChange={e => set('projectScope', e.target.value)}>
-              <option value="">Select project scope…</option>
-              <option value="soft">Soft Goods Refresh</option>
-              <option value="ffe">Guestroom FF&E</option>
-              <option value="ffe-common">FF&E + Common Areas</option>
-              <option value="bath">Bathroom + Hard Finish</option>
-              <option value="full">Full Repositioning</option>
-              <option value="pip">Brand PIP Compliance</option>
-              <option value="other">Not Sure Yet</option>
-            </select>
-            {errors.projectScope && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.projectScope}</div>}
-          </div>
-
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>When Are You Looking to Start?</label>
-            <select style={selectStyle} value={form.timeline} onChange={e => set('timeline', e.target.value)}>
-              <option value="">Select a timeframe…</option>
-              <option value="immediate">Immediately / Within 30 days</option>
-              <option value="1-3mo">1–3 months</option>
-              <option value="3-6mo">3–6 months</option>
-              <option value="6-12mo">6–12 months</option>
-              <option value="exploring">Just exploring for now</option>
-            </select>
-          </div>
-
-          {/* Honeypot — invisible to humans */}
-          <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
-            <input tabIndex="-1" value={form._hp} onChange={e => set('_hp', e.target.value)} autoComplete="off" />
-          </div>
-
+      {/* ── CALCULATOR ── */}
+      <section id="estimate" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+          <Calculator />
         </div>
+      </section>
 
-        {errors.submit && <div style={{ fontSize: '13px', color: '#C0392B', marginTop: '16px', textAlign: 'center' }}>{errors.submit}</div>}
-        <button onClick={handleSubmit} disabled={loading} style={{
-          width: '100%', marginTop: '28px',
-          background: loading ? '#D4956E' : '#C27C4E', color: '#fff',
-          fontSize: '15px', fontWeight: '500', padding: '14px', borderRadius: '7px',
-          border: 'none', cursor: loading ? 'wait' : 'pointer',
-          fontFamily: 'inherit', letterSpacing: '0.02em', transition: 'background 0.2s ease'
+      {/* ── WHY REVFLEX ── */}
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={whyRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Why RevFlex</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '48px', maxWidth: '560px'
+            }}>
+              Built for the way hotel value is actually created.
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+              {[
+                { title: 'Hospitality-aware underwriting', body: 'We evaluate the project, property, market, revenue history, and improvement thesis — not a generic loan file.', delay: 0 },
+                { title: 'Revenue-aligned structure', body: 'Repayment flexes with hotel performance rather than forcing every property into the same fixed-payment model.', delay: 100 },
+                { title: 'Scope-specific thinking', body: 'A light soft-goods refresh is not the same as a full repositioning. RevFlex evaluates capital needs by scope, timeline, and expected return.', delay: 200 },
+                { title: 'Clear, disciplined capital', body: 'Transparent terms, defined use of proceeds, practical underwriting, and a capped total obligation. No hidden fees. No compounding.', delay: 300 },
+              ].map(({ title, body, delay }) => (
+                <FadeCard key={title} delay={delay}>
+                  <div>
+                    <div style={{ width: '32px', height: '3px', background: '#C27C4E', marginBottom: '16px', borderRadius: '2px' }} />
+                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A1D1A', marginBottom: '10px' }}>{title}</h3>
+                    <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#5A5E5A', margin: 0 }}>{body}</p>
+                  </div>
+                </FadeCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <FadeCard delay={0}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>FAQ</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '48px', maxWidth: '560px'
+            }}>
+              Common questions about RevFlex.
+            </h2>
+            <FAQList />
+          </FadeCard>
+        </div>
+      </section>
+
+      {/* ── EARLY ACCESS ── */}
+      <section id="early-access" style={{ background: '#1A1D1A', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div ref={earlyRef} style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7A6A5A', marginBottom: '14px', fontWeight: '600' }}>Early Access</div>
+          <h2 style={{
+            fontFamily: "'Libre Baskerville', serif",
+            fontSize: 'clamp(26px, 3.5vw, 40px)',
+            fontWeight: '400', lineHeight: '1.25',
+            color: '#FAF8F4', marginBottom: '20px'
+          }}>
+            We are building RevFlex with hotel owners and operators.
+          </h2>
+          <p style={{ fontSize: '16px', lineHeight: '1.75', color: '#9A9E9A', marginBottom: '36px' }}>
+            RevFlex is currently in early development. We are speaking with hotel owners, operators, and capital partners to refine the model. If you have a property improvement in mind, we would like to hear from you.
+          </p>
+          <a href="#estimate" style={{
+            display: 'inline-block', background: '#C27C4E', color: '#fff',
+            fontSize: '15px', fontWeight: '500',
+            padding: '14px 28px', borderRadius: '7px', textDecoration: 'none'
+          }}>
+            Check Your Eligibility
+          </a>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#FAF8F4', borderTop: '1px solid #E8E4DE', padding: '40px 32px' }}>
+        <div style={{
+          maxWidth: '900px', margin: '0 auto',
+          display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center'
         }}>
-          {loading ? 'Calculating…' : 'Estimate My RevFlex Financing →'}
-        </button>
+          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '28px', width: 'auto', opacity: 0.7 }} />
+          <p style={{ fontSize: '12px', color: '#9A8A7A', lineHeight: '1.8', maxWidth: '600px' }}>
+            Revenue-aligned capital for hotel improvements. RevFlex is in development. Information provided on this website is for discussion purposes only and does not constitute a financing offer, commitment to lend, investment advice, or approval of credit. All financing is subject to underwriting, documentation, eligibility, and final approval. RevFlex is not a bank. Capital provided through revenue participation agreements.
+          </p>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '12px', color: '#9A8A7A', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <a href="/contact" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Contact</a>
+            <a href="/terms" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Terms of Service</a>
+            <a href="/privacy" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="/cookies" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Cookie Policy</a>
+            <a href="/disclaimer" style={{ color: '#9A8A7A', textDecoration: 'none' }}>Forward-Looking Statements</a>
+          </div>
+          <div style={{ fontSize: '12px', color: '#B0A898' }}>© 2026 RevFlex. All rights reserved.</div>
+        </div>
+      </footer>
 
-        <p style={{ fontSize: '12px', color: '#B0A898', textAlign: 'center', marginTop: '14px', lineHeight: '1.6' }}>
-          Not a commitment or approval. Only an initial estimate based on the inputs you provide.
-        </p>
-      </div>
+    </main>
+  )
+}
+
+
+// ── FAQList component ─────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    q: "Is RevFlex a loan?",
+    a: "No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. The total obligation is capped at a fixed multiple of the amount funded, and once that cap is reached, the agreement ends."
+  },
+  {
+    q: "What properties qualify for RevFlex financing?",
+    a: "RevFlex is designed for boutique hotels, independent inns, and lodging operators pursuing property improvement projects. We do not require a brand affiliation or franchise agreement. Properties of all sizes are considered. Eligibility is evaluated based on the property's gross revenue history, the scope and merit of the proposed improvement, the operator's track record, and the market opportunity — not on a generic loan file."
+  },
+  {
+    q: "What kinds of improvements does RevFlex fund?",
+    a: "RevFlex funds targeted property improvements including FF&E refreshes, soft goods upgrades, bathroom and hard-finish renovations, common area improvements, full repositioning projects, and brand PIP compliance work. The improvement must have a clear connection to revenue uplift potential — we evaluate scope, timeline, and expected return on the specific project."
+  },
+  {
+    q: "How is the financing amount determined?",
+    a: "The financing amount is based on the scope and cost of the proposed improvement, the property's gross revenue history, RevPAR performance, market conditions, and RevFlex's assessment of the revenue uplift potential of the project. Use the estimate calculator on this page to get an initial illustrative range. Actual amounts are subject to full underwriting and final approval."
+  },
+  {
+    q: "How does repayment work?",
+    a: "Repayment is structured as a fixed percentage of gross revenue, collected monthly. The percentage is determined at closing and is based on the financing amount and scope tier. Because payments are tied to revenue rather than a fixed calendar, payments naturally decrease during slower seasons and increase when revenue grows post-renovation. The total repayment obligation is capped — once the cap is reached, the agreement ends with no further obligation."
+  },
+  {
+    q: "What is the repayment cap?",
+    a: "The repayment cap is the maximum total amount you will ever pay under a RevFlex agreement. It is expressed as a multiple of the amount funded — typically between 1.70× and 1.88× depending on the scope of the project. For example, if you receive $200,000 in financing under a 1.78× cap, the most you will ever repay is $356,000 — regardless of how long repayment takes. Once that amount is reached, the agreement is complete."
+  },
+  {
+    q: "Is there a grace period before repayment begins?",
+    a: "Yes. RevFlex includes an approximately 90-day grace period following renovation completion before revenue share payments begin. This accounts for the ramp-up period during which ADR improvements, guest review recovery, and occupancy lift typically occur."
+  },
+  {
+    q: "Do I need to provide a personal guarantee?",
+    a: "No. RevFlex does not require a personal guarantee. Capital risk stays with RevFlex, not with the operator or property owner."
+  },
+  {
+    q: "Will RevFlex take equity in my property?",
+    a: "No. RevFlex financing does not involve any equity stake, warrants, or ownership interest in your property or business. You retain full ownership throughout and after the financing."
+  },
+  {
+    q: "How long does the process take?",
+    a: "RevFlex targets a 2–3 week close from qualified inquiry to funded. This includes initial review, underwriting, documentation, and fund disbursement. Actual timelines depend on the completeness of information provided and the complexity of the project."
+  },
+  {
+    q: "What does RevFlex look at during underwriting?",
+    a: "RevFlex evaluates the property's gross revenue history, ADR and occupancy trends, RevPAR relative to the competitive set, the quality and scope of the proposed improvement, FF&E and soft goods condition, guest review quality and trajectory, distribution mix and OTA dependency, revenue management maturity, staffing and operational quality, and the overall market opportunity. We underwrite future cash flow uplift — not just historical collateral."
+  },
+  {
+    q: "Does applying affect my personal credit score?",
+    a: "RevFlex does not require a personal credit check as part of the standard qualification process. Our underwriting is focused on property-level revenue performance and the improvement thesis, not personal credit history."
+  },
+  {
+    q: "Is RevFlex available nationwide?",
+    a: "RevFlex is currently in early development and accepting inquiries from US-based hotel owners and operators. Certain geographic limitations may apply depending on local rules and regulations. Submit an inquiry to discuss your specific property and market."
+  },
+  {
+    q: "This isn't a commitment to fund, right?",
+    a: "Correct. Nothing on this website — including the estimate calculator — constitutes a financing offer, pre-approval, or commitment to lend. All estimates are illustrative. Actual financing is subject to full underwriting, documentation, eligibility review, and final approval by RevFlex."
+  },
+]
+
+function FAQList() {
+  const [openIndex, setOpenIndex] = useState(null)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+      {FAQ_ITEMS.map((item, i) => (
+        <div key={i} style={{
+          borderTop: '1px solid #E0D9CF',
+          ...(i === FAQ_ITEMS.length - 1 ? { borderBottom: '1px solid #E0D9CF' } : {})
+        }}>
+          <button
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            style={{
+              width: '100%', textAlign: 'left', background: 'none', border: 'none',
+              padding: '20px 0', cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              gap: '16px',
+            }}
+          >
+            <span style={{ fontSize: '15px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1.4' }}>
+              {item.q}
+            </span>
+            <span style={{
+              flexShrink: 0, width: '20px', height: '20px',
+              borderRadius: '50%', background: openIndex === i ? '#C27C4E' : '#E8E4DE',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.2s ease',
+            }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                {openIndex === i
+                  ? <path d="M2 5h6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+                  : <path d="M5 2v6M2 5h6" stroke="#7A6A5A" strokeWidth="1.5" strokeLinecap="round"/>
+                }
+              </svg>
+            </span>
+          </button>
+          {openIndex === i && (
+            <div style={{
+              fontSize: '14px', lineHeight: '1.8', color: '#4A4E4A',
+              paddingBottom: '20px', paddingRight: '36px',
+            }}>
+              {item.a}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   )
+}
+
+// ── Nav component ────────────────────────────────────────────────────────────
+function Nav() {
+  const [open, setOpen] = useState(false)
+  const links = [
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Estimate', href: '#estimate' },
+    { label: 'Early Access', href: '#early-access' },
+  ]
+  return (
+    <nav style={{
+      position: 'sticky', top: 0, zIndex: 50,
+      background: '#FAF8F4', borderBottom: '1px solid #E8E4DE',
+    }}>
+      <div style={{
+        padding: '0 24px', height: '76px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        maxWidth: '1200px', margin: '0 auto',
+      }}>
+        <a href="/">
+          <Image src="/logo-dark.png" alt="RevFlex" width={200} height={60}
+            style={{ objectFit: 'contain', height: '52px', width: 'auto', display: 'block' }} priority />
+        </a>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}
+          className="desktop-nav">
+          {links.map(l => (
+            <a key={l.label} href={l.href}
+              style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>
+              {l.label}
+            </a>
+          ))}
+          <a href="#estimate" style={{
+            background: '#C27C4E', color: '#fff',
+            fontSize: '13px', fontWeight: '500',
+            padding: '10px 20px', borderRadius: '6px', textDecoration: 'none',
+            whiteSpace: 'nowrap'
+          }}>Check Eligibility</a>
+        </div>
+
+        <button
+          onClick={() => setOpen(o => !o)}
+          aria-label="Toggle menu"
+          style={{
+            display: 'none', background: 'none', border: 'none',
+            cursor: 'pointer', padding: '8px', color: '#1A1D1A',
+          }}
+          className="hamburger"
+        >
+          {open ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {open && (
+        <div style={{
+          background: '#FAF8F4', borderTop: '1px solid #E8E4DE',
+          padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', gap: '0',
+        }}
+          className="mobile-menu">
+          {links.map(l => (
+            <a key={l.label} href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                fontSize: '16px', color: '#1A1D1A', textDecoration: 'none',
+                padding: '14px 0', borderBottom: '1px solid #F0EBE3',
+                display: 'block',
+              }}>
+              {l.label}
+            </a>
+          ))}
+          <a href="#estimate"
+            onClick={() => setOpen(false)}
+            style={{
+              display: 'block', marginTop: '20px',
+              background: '#C27C4E', color: '#fff', textAlign: 'center',
+              fontSize: '15px', fontWeight: '500',
+              padding: '14px', borderRadius: '7px', textDecoration: 'none',
+            }}>
+            Check Eligibility
+          </a>
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: block !important; }
+        }
+      `}</style>
+    </nav>
+  )
+}
+
+// ── FadeCard component ────────────────────────────────────────────────────────
+function FadeCard({ children, delay = 0 }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof window === 'undefined') return
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(20px)'
+    el.style.transition = `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1'
+          el.style.transform = 'translateY(0)'
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [delay])
+  return <div ref={ref}>{children}</div>
 }
