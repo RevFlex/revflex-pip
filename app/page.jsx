@@ -228,6 +228,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── FAQ ── */}
+      <section style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <FadeCard delay={0}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>FAQ</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '48px', maxWidth: '560px'
+            }}>
+              Common questions about RevFlex.
+            </h2>
+            <FAQList />
+          </FadeCard>
+        </div>
+      </section>
+
       {/* ── EARLY ACCESS ── */}
       <section id="early-access" style={{ background: '#1A1D1A', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div ref={earlyRef} style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
@@ -259,7 +277,7 @@ export default function Home() {
           maxWidth: '900px', margin: '0 auto',
           display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center'
         }}>
-          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '42px', width: 'auto', opacity: 0.7 }} />
+          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '28px', width: 'auto', opacity: 0.7 }} />
           <p style={{ fontSize: '12px', color: '#9A8A7A', lineHeight: '1.8', maxWidth: '600px' }}>
             Revenue-aligned capital for hotel improvements. RevFlex is in development. Information provided on this website is for discussion purposes only and does not constitute a financing offer, commitment to lend, investment advice, or approval of credit. All financing is subject to underwriting, documentation, eligibility, and final approval. RevFlex is not a bank. Capital provided through revenue participation agreements.
           </p>
@@ -278,6 +296,116 @@ export default function Home() {
   )
 }
 
+
+// ── FAQList component ─────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    q: 'Is RevFlex a loan?',
+    a: 'No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. The total obligation is capped at a fixed multiple of the amount funded, and once that cap is reached, the agreement ends.'
+  },
+  {
+    q: 'What properties qualify for RevFlex financing?',
+    a: 'RevFlex is designed for boutique hotels, independent inns, and lodging operators pursuing property improvement projects. We do not require a brand affiliation or franchise agreement. Properties of all sizes are considered. Eligibility is evaluated based on the property's gross revenue history, the scope and merit of the proposed improvement, the operator's track record, and the market opportunity — not on a generic loan file.'
+  },
+  {
+    q: 'What kinds of improvements does RevFlex fund?',
+    a: 'RevFlex funds targeted property improvements including FF&E refreshes, soft goods upgrades, bathroom and hard-finish renovations, common area improvements, full repositioning projects, and brand PIP compliance work. The improvement must have a clear connection to revenue uplift potential — we evaluate scope, timeline, and expected return on the specific project.'
+  },
+  {
+    q: 'How is the financing amount determined?',
+    a: 'The financing amount is based on the scope and cost of the proposed improvement, the property's gross revenue history, RevPAR performance, market conditions, and RevFlex's assessment of the revenue uplift potential of the project. Use the estimate calculator on this page to get an initial illustrative range. Actual amounts are subject to full underwriting and final approval.'
+  },
+  {
+    q: 'How does repayment work?',
+    a: 'Repayment is structured as a fixed percentage of gross revenue, collected monthly. The percentage is determined at closing and is based on the financing amount and scope tier. Because payments are tied to revenue rather than a fixed calendar, payments naturally decrease during slower seasons and increase when revenue grows post-renovation. The total repayment obligation is capped — once the cap is reached, the agreement ends with no further obligation.'
+  },
+  {
+    q: 'What is the repayment cap?',
+    a: 'The repayment cap is the maximum total amount you will ever pay under a RevFlex agreement. It is expressed as a multiple of the amount funded — typically between 1.70× and 1.88× depending on the scope of the project. For example, if you receive $200,000 in financing under a 1.78× cap, the most you will ever repay is $356,000 — regardless of how long repayment takes. Once that amount is reached, the agreement is complete.'
+  },
+  {
+    q: 'Is there a grace period before repayment begins?',
+    a: 'Yes. RevFlex includes an approximately 90-day grace period following renovation completion before revenue share payments begin. This accounts for the ramp-up period during which ADR improvements, guest review recovery, and occupancy lift typically occur.'
+  },
+  {
+    q: 'Do I need to provide a personal guarantee?',
+    a: 'No. RevFlex does not require a personal guarantee. Capital risk stays with RevFlex, not with the operator or property owner.'
+  },
+  {
+    q: 'Will RevFlex take equity in my property?',
+    a: 'No. RevFlex financing does not involve any equity stake, warrants, or ownership interest in your property or business. You retain full ownership throughout and after the financing.'
+  },
+  {
+    q: 'How long does the process take?',
+    a: 'RevFlex targets a 2–3 week close from qualified inquiry to funded. This includes initial review, underwriting, documentation, and fund disbursement. Actual timelines depend on the completeness of information provided and the complexity of the project.'
+  },
+  {
+    q: 'What does RevFlex look at during underwriting?',
+    a: 'RevFlex evaluates the property's gross revenue history, ADR and occupancy trends, RevPAR relative to the competitive set, the quality and scope of the proposed improvement, FF&E and soft goods condition, guest review quality and trajectory, distribution mix and OTA dependency, revenue management maturity, staffing and operational quality, and the overall market opportunity. We underwrite future cash flow uplift — not just historical collateral.'
+  },
+  {
+    q: 'Does applying affect my personal credit score?',
+    a: 'RevFlex does not require a personal credit check as part of the standard qualification process. Our underwriting is focused on property-level revenue performance and the improvement thesis, not personal credit history.'
+  },
+  {
+    q: 'Is RevFlex available nationwide?',
+    a: 'RevFlex is currently in early development and accepting inquiries from US-based hotel owners and operators. Certain geographic limitations may apply depending on local rules and regulations. Submit an inquiry to discuss your specific property and market.'
+  },
+  {
+    q: 'This isn't a commitment to fund, right?',
+    a: 'Correct. Nothing on this website — including the estimate calculator — constitutes a financing offer, pre-approval, or commitment to lend. All estimates are illustrative. Actual financing is subject to full underwriting, documentation, eligibility review, and final approval by RevFlex.'
+  },
+]
+
+function FAQList() {
+  const [openIndex, setOpenIndex] = useState(null)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+      {FAQ_ITEMS.map((item, i) => (
+        <div key={i} style={{
+          borderTop: '1px solid #E0D9CF',
+          ...(i === FAQ_ITEMS.length - 1 ? { borderBottom: '1px solid #E0D9CF' } : {})
+        }}>
+          <button
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            style={{
+              width: '100%', textAlign: 'left', background: 'none', border: 'none',
+              padding: '20px 0', cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              gap: '16px',
+            }}
+          >
+            <span style={{ fontSize: '15px', fontWeight: '500', color: '#1A1D1A', lineHeight: '1.4' }}>
+              {item.q}
+            </span>
+            <span style={{
+              flexShrink: 0, width: '20px', height: '20px',
+              borderRadius: '50%', background: openIndex === i ? '#C27C4E' : '#E8E4DE',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.2s ease',
+            }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                {openIndex === i
+                  ? <path d="M2 5h6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+                  : <path d="M5 2v6M2 5h6" stroke="#7A6A5A" strokeWidth="1.5" strokeLinecap="round"/>
+                }
+              </svg>
+            </span>
+          </button>
+          {openIndex === i && (
+            <div style={{
+              fontSize: '14px', lineHeight: '1.8', color: '#4A4E4A',
+              paddingBottom: '20px', paddingRight: '36px',
+            }}>
+              {item.a}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── Nav component ────────────────────────────────────────────────────────────
 function Nav() {
   const [open, setOpen] = useState(false)
@@ -293,13 +421,13 @@ function Nav() {
     }}>
       {/* Main bar */}
       <div style={{
-        padding: '0 24px', height: '60px',
+        padding: '0 24px', height: '76px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         maxWidth: '1200px', margin: '0 auto',
       }}>
         <a href="/">
-          <Image src="/logo-dark.png" alt="RevFlex" width={140} height={40}
-            style={{ objectFit: 'contain', height: '36px', width: 'auto', display: 'block' }} priority />
+          <Image src="/logo-dark.png" alt="RevFlex" width={200} height={60}
+            style={{ objectFit: 'contain', height: '52px', width: 'auto', display: 'block' }} priority />
         </a>
 
         {/* Desktop links */}
