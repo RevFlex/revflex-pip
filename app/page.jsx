@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Calculator from '../components/Calculator'
 
 // ── Fade-up hook ─────────────────────────────────────────────────────────────
@@ -41,28 +41,10 @@ export default function Home() {
     <main style={{ fontFamily: "'Inter', sans-serif", background: '#FAF8F4', color: '#1A1D1A' }}>
 
       {/* ── NAV ── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: '#FAF8F4', borderBottom: '1px solid #E8E4DE',
-        padding: '0 32px', height: '64px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-      }}>
-        <Image src="/logo-dark.png" alt="RevFlex" width={160} height={48} style={{ objectFit: 'contain', height: '44px', width: 'auto' }} priority />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
-          <a href="#how-it-works" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>How It Works</a>
-          <a href="#estimate" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>Estimate</a>
-          <a href="#early-access" style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>Early Access</a>
-          <a href="#estimate" style={{
-            background: '#C27C4E', color: '#fff',
-            fontSize: '13px', fontWeight: '500', letterSpacing: '0.03em',
-            padding: '10px 20px', borderRadius: '6px', textDecoration: 'none',
-            whiteSpace: 'nowrap'
-          }}>Check Eligibility</a>
-        </div>
-      </nav>
+      <Nav />
 
       {/* ── HERO ── */}
-      <section style={{ maxWidth: '900px', margin: '0 auto', padding: '96px 32px 80px', textAlign: 'center' }}>
+      <section style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px) clamp(48px, 6vw, 80px)', textAlign: 'center' }}>
         <div ref={heroRef}>
           <div style={{
             display: 'inline-block',
@@ -128,7 +110,7 @@ export default function Home() {
       </section>
 
       {/* ── CHALLENGE ── */}
-      <section id="how-it-works" style={{ background: '#F3EEE7', padding: '88px 32px' }}>
+      <section id="how-it-works" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={challengeRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Challenge</div>
@@ -164,7 +146,7 @@ export default function Home() {
       </section>
 
       {/* ── STRUCTURE ── */}
-      <section style={{ padding: '88px 32px' }}>
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={structureRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Structure</div>
@@ -206,14 +188,14 @@ export default function Home() {
       </section>
 
       {/* ── CALCULATOR ── */}
-      <section id="estimate" style={{ background: '#F3EEE7', padding: '88px 32px' }}>
+      <section id="estimate" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <Calculator />
         </div>
       </section>
 
       {/* ── WHY REVFLEX ── */}
-      <section style={{ padding: '88px 32px' }}>
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={whyRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Why RevFlex</div>
@@ -247,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* ── EARLY ACCESS ── */}
-      <section id="early-access" style={{ background: '#1A1D1A', padding: '88px 32px' }}>
+      <section id="early-access" style={{ background: '#1A1D1A', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
         <div ref={earlyRef} style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7A6A5A', marginBottom: '14px', fontWeight: '600' }}>Early Access</div>
           <h2 style={{
@@ -293,6 +275,110 @@ export default function Home() {
       </footer>
 
     </main>
+  )
+}
+
+// ── Nav component ────────────────────────────────────────────────────────────
+function Nav() {
+  const [open, setOpen] = useState(false)
+  const links = [
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Estimate', href: '#estimate' },
+    { label: 'Early Access', href: '#early-access' },
+  ]
+  return (
+    <nav style={{
+      position: 'sticky', top: 0, zIndex: 50,
+      background: '#FAF8F4', borderBottom: '1px solid #E8E4DE',
+    }}>
+      {/* Main bar */}
+      <div style={{
+        padding: '0 24px', height: '60px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        maxWidth: '1200px', margin: '0 auto',
+      }}>
+        <a href="/">
+          <Image src="/logo-dark.png" alt="RevFlex" width={140} height={40}
+            style={{ objectFit: 'contain', height: '36px', width: 'auto', display: 'block' }} priority />
+        </a>
+
+        {/* Desktop links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}
+          className="desktop-nav">
+          {links.map(l => (
+            <a key={l.label} href={l.href}
+              style={{ fontSize: '14px', color: '#4A4E4A', textDecoration: 'none' }}>
+              {l.label}
+            </a>
+          ))}
+          <a href="#estimate" style={{
+            background: '#C27C4E', color: '#fff',
+            fontSize: '13px', fontWeight: '500',
+            padding: '10px 20px', borderRadius: '6px', textDecoration: 'none',
+            whiteSpace: 'nowrap'
+          }}>Check Eligibility</a>
+        </div>
+
+        {/* Hamburger — mobile only */}
+        <button
+          onClick={() => setOpen(o => !o)}
+          aria-label="Toggle menu"
+          style={{
+            display: 'none', background: 'none', border: 'none',
+            cursor: 'pointer', padding: '8px', color: '#1A1D1A',
+          }}
+          className="hamburger"
+        >
+          {open ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile dropdown */}
+      {open && (
+        <div style={{
+          background: '#FAF8F4', borderTop: '1px solid #E8E4DE',
+          padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', gap: '0',
+        }}
+          className="mobile-menu">
+          {links.map(l => (
+            <a key={l.label} href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                fontSize: '16px', color: '#1A1D1A', textDecoration: 'none',
+                padding: '14px 0', borderBottom: '1px solid #F0EBE3',
+                display: 'block',
+              }}>
+              {l.label}
+            </a>
+          ))}
+          <a href="#estimate"
+            onClick={() => setOpen(false)}
+            style={{
+              display: 'block', marginTop: '20px',
+              background: '#C27C4E', color: '#fff', textAlign: 'center',
+              fontSize: '15px', fontWeight: '500',
+              padding: '14px', borderRadius: '7px', textDecoration: 'none',
+            }}>
+            Check Eligibility
+          </a>
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: block !important; }
+        }
+      `}</style>
+    </nav>
   )
 }
 
