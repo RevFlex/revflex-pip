@@ -305,7 +305,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What properties qualify for RevFlex financing?',
-    a: 'RevFlex is designed for boutique hotels, independent inns, and lodging operators pursuing property improvement projects. We do not require a brand affiliation or franchise agreement. Properties of all sizes are considered. Eligibility is evaluated based on the property's gross revenue history, the scope and merit of the proposed improvement, the operator's track record, and the market opportunity — not on a generic loan file.'
+    a: "RevFlex is designed for boutique hotels, independent inns, and lodging operators pursuing property improvement projects. We do not require a brand affiliation or franchise agreement. Properties of all sizes are considered. Eligibility is evaluated based on the property's gross revenue history, the scope and merit of the proposed improvement, the operator's track record, and the market opportunity — not on a generic loan file."
   },
   {
     q: 'What kinds of improvements does RevFlex fund?',
