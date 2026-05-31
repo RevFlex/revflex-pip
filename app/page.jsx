@@ -96,7 +96,7 @@ export default function Home() {
             marginTop: '52px', paddingTop: '40px', borderTop: '1px solid #E8E4DE'
           }}>
             {[
-              { label: 'Revenue-aligned repayment', sub: "Flexes with hotel's revenue" },
+              { label: 'Revenue-aligned repayment', sub: "Flexes with the hotel's revenue" },
               { label: 'No personal guarantee', sub: 'Capital risk stays with us' },
               { label: 'No franchise required', sub: 'All property types welcome' },
             ].map(({ label, sub }) => (
@@ -300,60 +300,60 @@ export default function Home() {
 // ── FAQList component ─────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
-    q: 'Is RevFlex a loan?',
-    a: 'No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. The total obligation is capped at a fixed multiple of the amount funded, and once that cap is reached, the agreement ends.'
+    q: "Is RevFlex a loan?",
+    a: "No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. The total obligation is capped at a fixed multiple of the amount funded, and once that cap is reached, the agreement ends."
   },
   {
-    q: 'What properties qualify for RevFlex financing?',
+    q: "What properties qualify for RevFlex financing?",
     a: "RevFlex is designed for boutique hotels, independent inns, and lodging operators pursuing property improvement projects. We do not require a brand affiliation or franchise agreement. Properties of all sizes are considered. Eligibility is evaluated based on the property's gross revenue history, the scope and merit of the proposed improvement, the operator's track record, and the market opportunity — not on a generic loan file."
   },
   {
-    q: 'What kinds of improvements does RevFlex fund?',
-    a: 'RevFlex funds targeted property improvements including FF&E refreshes, soft goods upgrades, bathroom and hard-finish renovations, common area improvements, full repositioning projects, and brand PIP compliance work. The improvement must have a clear connection to revenue uplift potential — we evaluate scope, timeline, and expected return on the specific project.'
+    q: "What kinds of improvements does RevFlex fund?",
+    a: "RevFlex funds targeted property improvements including FF&E refreshes, soft goods upgrades, bathroom and hard-finish renovations, common area improvements, full repositioning projects, and brand PIP compliance work. The improvement must have a clear connection to revenue uplift potential — we evaluate scope, timeline, and expected return on the specific project."
   },
   {
-    q: 'How is the financing amount determined?',
-    a: 'The financing amount is based on the scope and cost of the proposed improvement, the property's gross revenue history, RevPAR performance, market conditions, and RevFlex's assessment of the revenue uplift potential of the project. Use the estimate calculator on this page to get an initial illustrative range. Actual amounts are subject to full underwriting and final approval.'
+    q: "How is the financing amount determined?",
+    a: "The financing amount is based on the scope and cost of the proposed improvement, the property's gross revenue history, RevPAR performance, market conditions, and RevFlex's assessment of the revenue uplift potential of the project. Use the estimate calculator on this page to get an initial illustrative range. Actual amounts are subject to full underwriting and final approval."
   },
   {
-    q: 'How does repayment work?',
-    a: 'Repayment is structured as a fixed percentage of gross revenue, collected monthly. The percentage is determined at closing and is based on the financing amount and scope tier. Because payments are tied to revenue rather than a fixed calendar, payments naturally decrease during slower seasons and increase when revenue grows post-renovation. The total repayment obligation is capped — once the cap is reached, the agreement ends with no further obligation.'
+    q: "How does repayment work?",
+    a: "Repayment is structured as a fixed percentage of gross revenue, collected monthly. The percentage is determined at closing and is based on the financing amount and scope tier. Because payments are tied to revenue rather than a fixed calendar, payments naturally decrease during slower seasons and increase when revenue grows post-renovation. The total repayment obligation is capped — once the cap is reached, the agreement ends with no further obligation."
   },
   {
-    q: 'What is the repayment cap?',
-    a: 'The repayment cap is the maximum total amount you will ever pay under a RevFlex agreement. It is expressed as a multiple of the amount funded — typically between 1.70× and 1.88× depending on the scope of the project. For example, if you receive $200,000 in financing under a 1.78× cap, the most you will ever repay is $356,000 — regardless of how long repayment takes. Once that amount is reached, the agreement is complete.'
+    q: "What is the repayment cap?",
+    a: "The repayment cap is the maximum total amount you will ever pay under a RevFlex agreement. It is expressed as a multiple of the amount funded — typically between 1.70× and 1.88× depending on the scope of the project. For example, if you receive $200,000 in financing under a 1.78× cap, the most you will ever repay is $356,000 — regardless of how long repayment takes. Once that amount is reached, the agreement is complete."
   },
   {
-    q: 'Is there a grace period before repayment begins?',
-    a: 'Yes. RevFlex includes an approximately 90-day grace period following renovation completion before revenue share payments begin. This accounts for the ramp-up period during which ADR improvements, guest review recovery, and occupancy lift typically occur.'
+    q: "Is there a grace period before repayment begins?",
+    a: "Yes. RevFlex includes an approximately 90-day grace period following renovation completion before revenue share payments begin. This accounts for the ramp-up period during which ADR improvements, guest review recovery, and occupancy lift typically occur."
   },
   {
-    q: 'Do I need to provide a personal guarantee?',
-    a: 'No. RevFlex does not require a personal guarantee. Capital risk stays with RevFlex, not with the operator or property owner.'
+    q: "Do I need to provide a personal guarantee?",
+    a: "No. RevFlex does not require a personal guarantee. Capital risk stays with RevFlex, not with the operator or property owner."
   },
   {
-    q: 'Will RevFlex take equity in my property?',
-    a: 'No. RevFlex financing does not involve any equity stake, warrants, or ownership interest in your property or business. You retain full ownership throughout and after the financing.'
+    q: "Will RevFlex take equity in my property?",
+    a: "No. RevFlex financing does not involve any equity stake, warrants, or ownership interest in your property or business. You retain full ownership throughout and after the financing."
   },
   {
-    q: 'How long does the process take?',
-    a: 'RevFlex targets a 2–3 week close from qualified inquiry to funded. This includes initial review, underwriting, documentation, and fund disbursement. Actual timelines depend on the completeness of information provided and the complexity of the project.'
+    q: "How long does the process take?",
+    a: "RevFlex targets a 2–3 week close from qualified inquiry to funded. This includes initial review, underwriting, documentation, and fund disbursement. Actual timelines depend on the completeness of information provided and the complexity of the project."
   },
   {
-    q: 'What does RevFlex look at during underwriting?',
+    q: "What does RevFlex look at during underwriting?",
     a: "RevFlex evaluates the property's gross revenue history, ADR and occupancy trends, RevPAR relative to the competitive set, the quality and scope of the proposed improvement, FF&E and soft goods condition, guest review quality and trajectory, distribution mix and OTA dependency, revenue management maturity, staffing and operational quality, and the overall market opportunity. We underwrite future cash flow uplift — not just historical collateral."
   },
   {
-    q: 'Does applying affect my personal credit score?',
-    a: 'RevFlex does not require a personal credit check as part of the standard qualification process. Our underwriting is focused on property-level revenue performance and the improvement thesis, not personal credit history.'
+    q: "Does applying affect my personal credit score?",
+    a: "RevFlex does not require a personal credit check as part of the standard qualification process. Our underwriting is focused on property-level revenue performance and the improvement thesis, not personal credit history."
   },
   {
-    q: 'Is RevFlex available nationwide?',
-    a: 'RevFlex is currently in early development and accepting inquiries from US-based hotel owners and operators. Certain geographic limitations may apply depending on local rules and regulations. Submit an inquiry to discuss your specific property and market.'
+    q: "Is RevFlex available nationwide?",
+    a: "RevFlex is currently in early development and accepting inquiries from US-based hotel owners and operators. Certain geographic limitations may apply depending on local rules and regulations. Submit an inquiry to discuss your specific property and market."
   },
   {
     q: "This isn't a commitment to fund, right?",
-    a: 'Correct. Nothing on this website — including the estimate calculator — constitutes a financing offer, pre-approval, or commitment to lend. All estimates are illustrative. Actual financing is subject to full underwriting, documentation, eligibility review, and final approval by RevFlex.'
+    a: "Correct. Nothing on this website — including the estimate calculator — constitutes a financing offer, pre-approval, or commitment to lend. All estimates are illustrative. Actual financing is subject to full underwriting, documentation, eligibility review, and final approval by RevFlex."
   },
 ]
 
@@ -419,7 +419,6 @@ function Nav() {
       position: 'sticky', top: 0, zIndex: 50,
       background: '#FAF8F4', borderBottom: '1px solid #E8E4DE',
     }}>
-      {/* Main bar */}
       <div style={{
         padding: '0 24px', height: '76px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -430,7 +429,6 @@ function Nav() {
             style={{ objectFit: 'contain', height: '52px', width: 'auto', display: 'block' }} priority />
         </a>
 
-        {/* Desktop links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}
           className="desktop-nav">
           {links.map(l => (
@@ -447,7 +445,6 @@ function Nav() {
           }}>Check Eligibility</a>
         </div>
 
-        {/* Hamburger — mobile only */}
         <button
           onClick={() => setOpen(o => !o)}
           aria-label="Toggle menu"
@@ -469,7 +466,6 @@ function Nav() {
         </button>
       </div>
 
-      {/* Mobile dropdown */}
       {open && (
         <div style={{
           background: '#FAF8F4', borderTop: '1px solid #E8E4DE',
