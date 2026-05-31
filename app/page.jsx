@@ -341,7 +341,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What does RevFlex look at during underwriting?',
-    a: 'RevFlex evaluates the property's gross revenue history, ADR and occupancy trends, RevPAR relative to the competitive set, the quality and scope of the proposed improvement, FF&E and soft goods condition, guest review quality and trajectory, distribution mix and OTA dependency, revenue management maturity, staffing and operational quality, and the overall market opportunity. We underwrite future cash flow uplift — not just historical collateral.'
+    a: "RevFlex evaluates the property's gross revenue history, ADR and occupancy trends, RevPAR relative to the competitive set, the quality and scope of the proposed improvement, FF&E and soft goods condition, guest review quality and trajectory, distribution mix and OTA dependency, revenue management maturity, staffing and operational quality, and the overall market opportunity. We underwrite future cash flow uplift — not just historical collateral."
   },
   {
     q: 'Does applying affect my personal credit score?',
@@ -352,7 +352,7 @@ const FAQ_ITEMS = [
     a: 'RevFlex is currently in early development and accepting inquiries from US-based hotel owners and operators. Certain geographic limitations may apply depending on local rules and regulations. Submit an inquiry to discuss your specific property and market.'
   },
   {
-    q: 'This isn't a commitment to fund, right?',
+    q: "This isn't a commitment to fund, right?",
     a: 'Correct. Nothing on this website — including the estimate calculator — constitutes a financing offer, pre-approval, or commitment to lend. All estimates are illustrative. Actual financing is subject to full underwriting, documentation, eligibility review, and final approval by RevFlex.'
   },
 ]
