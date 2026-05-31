@@ -259,7 +259,7 @@ export default function Home() {
           maxWidth: '900px', margin: '0 auto',
           display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', textAlign: 'center'
         }}>
-          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '28px', width: 'auto', opacity: 0.7 }} />
+          <Image src="/logo-dark.png" alt="RevFlex" width={100} height={30} style={{ objectFit: 'contain', height: '36px', width: 'auto', opacity: 0.7 }} />
           <p style={{ fontSize: '12px', color: '#9A8A7A', lineHeight: '1.8', maxWidth: '600px' }}>
             Revenue-aligned capital for hotel improvements. RevFlex is in development. Information provided on this website is for discussion purposes only and does not constitute a financing offer, commitment to lend, investment advice, or approval of credit. All financing is subject to underwriting, documentation, eligibility, and final approval. RevFlex is not a bank. Capital provided through revenue participation agreements.
           </p>
