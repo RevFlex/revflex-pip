@@ -261,11 +261,11 @@ export default function Calculator() {
           <style>{`@media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr !important; } }`}</style>
           <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#E0D9CF' }}>
             <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment Cap</div>
+              <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Total Repayment</div>
               <div style={{ minHeight: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px', fontWeight: '500', color: '#1A1D1A' }}><AnimatedAmount value={result.totalRepayment} /></div>
               </div>
-              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Capped at {result.capMultiple}× of amount funded</div>
+              <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '8px' }}>Your funding amount plus one fixed fee</div>
             </div>
             <div style={{ background: '#FAF8F4', padding: '20px 22px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '11px', color: '#9A8A7A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>Est. Payback Period</div>
