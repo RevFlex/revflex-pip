@@ -73,7 +73,7 @@ export async function POST(request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'RevFlex <contact@revflex.co>',
+        from: 'RevFlex <onboarding@resend.dev>',
         to: [TO_EMAIL],
         reply_to: email,
         subject: `RevFlex Contact — ${name}`,
