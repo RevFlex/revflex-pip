@@ -139,7 +139,7 @@ export async function POST(request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'RevFlex <inquiries@revflex.co>',
+        from: 'RevFlex <onboarding@resend.dev>',
         to: [TO_EMAIL],
         subject,
         html,
