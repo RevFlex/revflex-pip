@@ -184,7 +184,7 @@ export default function Calculator() {
       if (!response.ok) throw new Error('Submission failed')
       setInquirySent(true)
       setTimeout(() => {
-        const el = document.getElementById('calculator-section')
+        const el = document.getElementById('estimate')
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }, 50)    
     } catch (err) {
