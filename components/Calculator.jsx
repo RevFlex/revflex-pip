@@ -183,7 +183,10 @@ export default function Calculator() {
       })
       if (!response.ok) throw new Error('Submission failed')
       setInquirySent(true)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTimeout(() => {
+        const el = document.getElementById('calculator-section')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 50)    
     } catch (err) {
       setErrors({ inquiry: 'Something went wrong. Please try again.' })
     } finally {
