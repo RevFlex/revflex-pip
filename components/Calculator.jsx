@@ -183,6 +183,7 @@ export default function Calculator() {
       })
       if (!response.ok) throw new Error('Submission failed')
       setInquirySent(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       setErrors({ inquiry: 'Something went wrong. Please try again.' })
     } finally {
