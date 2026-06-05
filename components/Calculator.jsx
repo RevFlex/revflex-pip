@@ -299,7 +299,7 @@ export default function Calculator() {
           {/* Inquiry form */}
           <div style={{ padding: '28px 36px' }}>
             <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic' }}>
-              Illustrative estimate only. Actual financing, share rate, and repayment cap are subject to full underwriting, property review, and RevFlex approval. Revenue uplift projections are based on comparable market benchmarks and are not guaranteed.
+              This is an illustrative estimate based on the inputs you provided — not a financing offer or approval. Your actual funding amount, revenue share, and total repayment obligation will be determined through full underwriting and property review. Revenue figures shown are benchmark-based estimates and are not guaranteed.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
