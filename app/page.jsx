@@ -188,7 +188,7 @@ export default function Home() {
       </section>
 
       {/* ── CALCULATOR ── */}
-      <section id="estimate" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section id="estimate" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(24px, 6vw, 32px)' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <Calculator />
         </div>
