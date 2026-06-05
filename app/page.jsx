@@ -46,7 +46,7 @@ export default function Home() {
       <Nav />
 
       {/* ── HERO ── */}
-      <section style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px) clamp(48px, 6vw, 80px)', textAlign: 'center' }}>
+      <section style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(48px, 8vw, 96px) clamp(28px, 6vw, 40px) clamp(48px, 6vw, 80px)', textAlign: 'center' }}>
         <div ref={heroRef}>
           <div style={{
             display: 'inline-block',
@@ -112,7 +112,7 @@ export default function Home() {
       </section>
 
       {/* ── CHALLENGE ── */}
-      <section id="how-it-works" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section id="how-it-works" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={challengeRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Challenge</div>
@@ -148,7 +148,7 @@ export default function Home() {
       </section>
 
       {/* ── STRUCTURE ── */}
-      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={structureRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>The Structure</div>
@@ -195,7 +195,7 @@ export default function Home() {
       </section>
 
       {/* ── WHY REVFLEX ── */}
-      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section style={{ padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div ref={whyRef}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Why RevFlex</div>
@@ -229,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <FadeCard delay={0}>
             <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>FAQ</div>
@@ -247,7 +247,7 @@ export default function Home() {
       </section>
 
       {/* ── EARLY ACCESS ── */}
-      <section id="early-access" style={{ background: '#1A1D1A', padding: 'clamp(56px, 8vw, 88px) clamp(20px, 5vw, 32px)' }}>
+      <section id="early-access" style={{ background: '#1A1D1A', padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
         <div ref={earlyRef} style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7A6A5A', marginBottom: '14px', fontWeight: '600' }}>Early Access</div>
           <h2 style={{
