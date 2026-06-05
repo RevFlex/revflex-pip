@@ -129,6 +129,12 @@ export default function Calculator() {
       setResult(est)
       setSubmitted(true)
 
+      // ── FIX: scroll to estimate card after results render ──
+      setTimeout(() => {
+        const el = document.getElementById('estimate')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 80)
+
       // Silently capture partial lead (calculator only — no name/email yet)
       fetch('/api/inquiry', {
         method: 'POST',
@@ -186,7 +192,7 @@ export default function Calculator() {
       setTimeout(() => {
         const el = document.getElementById('estimate')
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }, 50)    
+      }, 50)
     } catch (err) {
       setErrors({ inquiry: 'Something went wrong. Please try again.' })
     } finally {
@@ -205,7 +211,7 @@ export default function Calculator() {
   // ── Success view ─────────────────────────────────────────────────────────
   if (inquirySent) {
     return (
-      <div>
+      <div id="estimate">
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
           <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
@@ -238,7 +244,8 @@ export default function Calculator() {
   // ── Result view ─────────────────────────────────────────────────────────
   if (submitted && result) {
     return (
-      <div>
+      // ── FIX: id="estimate" added so scroll target works ──
+      <div id="estimate">
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
           <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
