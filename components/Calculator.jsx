@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function fmt(n) {
   return '$' + Math.round(n).toLocaleString('en-US')
@@ -81,6 +81,25 @@ export default function Calculator() {
   const [loading, setLoading] = useState(false)
   const [inquiryLoading, setInquiryLoading] = useState(false)
 
+  // ── Partial lead refs ─────────────────────────────────────────────────────
+  // partialRef holds calculator data in memory after estimate runs.
+  // fullSentRef flips to true if user completes the full inquiry form.
+  // On tab/browser close, we send the partial ONLY if full was never sent.
+  const partialRef = useRef(null)
+  const fullSentRef = useRef(false)
+
+  // ── Send partial lead on tab/browser close ────────────────────────────────
+  useEffect(() => {
+    const handleUnload = () => {
+      if (partialRef.current && !fullSentRef.current) {
+        const payload = JSON.stringify(partialRef.current)
+        navigator.sendBeacon('/api/inquiry', new Blob([payload], { type: 'application/json' }))
+      }
+    }
+    window.addEventListener('beforeunload', handleUnload)
+    return () => window.removeEventListener('beforeunload', handleUnload)
+  }, [])
+
   function set(field, val) {
     setForm(f => ({ ...f, [field]: val }))
     setErrors(e => ({ ...e, [field]: undefined }))
@@ -129,31 +148,28 @@ export default function Calculator() {
       setResult(est)
       setSubmitted(true)
 
-      // ── FIX: scroll to estimate card after results render ──
+      // ── Scroll to estimate card after results render ──
       setTimeout(() => {
         const el = document.getElementById('estimate')
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 80)
 
-      // Silently capture partial lead (calculator only — no name/email yet)
-      // Skip if user already completed full inquiry this session
-      if (!inquirySent) fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'calculator_only',
-          propertyName: form.propertyName,
-          website: cleanWebsite(form.website),
-          rooms: form.rooms,
-          adr: form.adr,
-          occupancy: form.occupancy,
-          projectCost: form.projectCost,
-          projectScope: form.projectScope,
-          timeline: form.timeline,
-          estimate: est,
-          _hp: form._hp,
-        }),
-      }).catch(() => {}) // silent — don't block UX
+      // ── Store partial lead in memory only — do NOT send yet ──
+      // Will be sent via sendBeacon on tab close, but only if
+      // the user never completes the full inquiry form.
+      partialRef.current = {
+        type: 'calculator_only',
+        propertyName: form.propertyName,
+        website: cleanWebsite(form.website),
+        rooms: form.rooms,
+        adr: form.adr,
+        occupancy: form.occupancy,
+        projectCost: form.projectCost,
+        projectScope: form.projectScope,
+        timeline: form.timeline,
+        estimate: est,
+        _hp: form._hp,
+      }
 
     } catch (err) {
       setErrors({ submit: 'Something went wrong. Please try again.' })
@@ -189,6 +205,10 @@ export default function Calculator() {
         }),
       })
       if (!response.ok) throw new Error('Submission failed')
+
+      // ── Mark full inquiry as sent — suppresses partial on tab close ──
+      fullSentRef.current = true
+
       setInquirySent(true)
       setTimeout(() => {
         const el = document.getElementById('estimate')
@@ -206,6 +226,8 @@ export default function Calculator() {
     setInquirySent(false)
     setResult(null)
     setErrors({})
+    partialRef.current = null
+    fullSentRef.current = false
     setForm({ propertyName: '', website: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', name: '', email: '', role: '', _hp: '' })
   }
 
@@ -216,10 +238,10 @@ export default function Calculator() {
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
           <h2 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: '400', lineHeight: '1.25', color: '#1A1D1A', marginBottom: '12px' }}>
-            You're on the list.
+            You&apos;re on the list.
           </h2>
           <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-            We've received your inquiry for {form.propertyName || 'your property'}. We'll be in touch as we select our founding properties.
+            We&apos;ve received your inquiry for {form.propertyName || 'your property'}. We&apos;ll be in touch as we select our founding properties.
           </p>
         </div>
         <div style={{ background: '#FAF8F4', borderRadius: '16px', border: '1px solid #E0D9CF', padding: '36px' }}>
@@ -245,7 +267,6 @@ export default function Calculator() {
   // ── Result view ─────────────────────────────────────────────────────────
   if (submitted && result) {
     return (
-      // ── FIX: id="estimate" added so scroll target works ──
       <div id="estimate">
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>Estimate</div>
@@ -253,7 +274,7 @@ export default function Calculator() {
             {form.propertyName ? `Here's your estimate, ${form.propertyName}.` : "Here's your estimate."}
           </h2>
           <p style={{ fontSize: '15px', color: '#5A5E5A', lineHeight: '1.7' }}>
-            Ready to continue? Enter your details below to request early access — we'll be in touch as we select our founding properties.
+            Ready to continue? Enter your details below to request early access — we&apos;ll be in touch as we select our founding properties.
           </p>
         </div>
 
