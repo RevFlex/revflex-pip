@@ -50,8 +50,9 @@ async function postToSheet(data) {
   try {
     await fetch(SHEET_WEBHOOK_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(data),
+      redirect: 'follow',
     })
   } catch (err) {
     console.error('Sheet webhook error:', err)
