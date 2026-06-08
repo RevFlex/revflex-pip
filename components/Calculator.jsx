@@ -136,7 +136,8 @@ export default function Calculator() {
       }, 80)
 
       // Silently capture partial lead (calculator only — no name/email yet)
-      fetch('/api/inquiry', {
+      // Skip if user already completed full inquiry this session
+      if (!inquirySent) fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
