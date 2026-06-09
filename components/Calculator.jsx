@@ -215,8 +215,7 @@ export default function Calculator() {
       setInquiryLoading(false)
     }
   }
-
-  function reset() {
+function reset() {
     setSubmitted(false)
     setInquirySent(false)
     setResult(null)
@@ -224,6 +223,10 @@ export default function Calculator() {
     partialRef.current = null
     fullSentRef.current = false
     setForm({ propertyName: '', website: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', name: '', email: '', role: '', consent: false, _hp: '' })
+    setTimeout(() => {
+      const el = document.getElementById('estimate')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
   }
 
   // ── Success view ─────────────────────────────────────────────────────────
