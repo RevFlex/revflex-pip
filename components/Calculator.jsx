@@ -72,6 +72,7 @@ export default function Calculator() {
     propertyName: '', website: '', rooms: '', adr: '',
     occupancy: '', projectScope: '', projectCost: '',
     timeline: '', name: '', email: '', role: '',
+    consent: false,
     _hp: '', // honeypot — hidden from humans
   })
   const [submitted, setSubmitted] = useState(false)
@@ -82,9 +83,6 @@ export default function Calculator() {
   const [inquiryLoading, setInquiryLoading] = useState(false)
 
   // ── Partial lead refs ─────────────────────────────────────────────────────
-  // partialRef holds calculator data in memory after estimate runs.
-  // fullSentRef flips to true if user completes the full inquiry form.
-  // On tab/browser close, we send the partial ONLY if full was never sent.
   const partialRef = useRef(null)
   const fullSentRef = useRef(false)
 
@@ -123,13 +121,14 @@ export default function Calculator() {
     if (!form.name.trim()) e.name = 'Required'
     if (!form.email.trim()) e.email = 'Required'
     else if (!isValidEmail(form.email)) e.email = 'Enter a valid email address'
+    if (!form.consent) e.consent = 'Please confirm your agreement to continue'
     return e
   }
 
   async function handleSubmit() {
     const e = validateCalc()
     if (Object.keys(e).length) { setErrors(e); return }
-    if (form._hp) return // honeypot triggered — silently reject
+    if (form._hp) return
     setLoading(true)
     try {
       const response = await fetch('/api/estimate', {
@@ -154,9 +153,7 @@ export default function Calculator() {
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 80)
 
-      // ── Store partial lead in memory only — do NOT send yet ──
-      // Will be sent via sendBeacon on tab close, but only if
-      // the user never completes the full inquiry form.
+      // ── Store partial lead in memory only ──
       partialRef.current = {
         type: 'calculator_only',
         propertyName: form.propertyName,
@@ -181,7 +178,7 @@ export default function Calculator() {
   async function handleInquiry() {
     const e = validateInquiry()
     if (Object.keys(e).length) { setErrors(e); return }
-    if (form._hp) return // honeypot
+    if (form._hp) return
     setInquiryLoading(true)
     try {
       const response = await fetch('/api/inquiry', {
@@ -206,9 +203,7 @@ export default function Calculator() {
       })
       if (!response.ok) throw new Error('Submission failed')
 
-      // ── Mark full inquiry as sent — suppresses partial on tab close ──
       fullSentRef.current = true
-
       setInquirySent(true)
       setTimeout(() => {
         const el = document.getElementById('estimate')
@@ -228,7 +223,7 @@ export default function Calculator() {
     setErrors({})
     partialRef.current = null
     fullSentRef.current = false
-    setForm({ propertyName: '', website: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', name: '', email: '', role: '', _hp: '' })
+    setForm({ propertyName: '', website: '', rooms: '', adr: '', occupancy: '', projectScope: '', projectCost: '', timeline: '', name: '', email: '', role: '', consent: false, _hp: '' })
   }
 
   // ── Success view ─────────────────────────────────────────────────────────
@@ -338,9 +333,9 @@ export default function Calculator() {
                 {errors.email && <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '4px' }}>{errors.email}</div>}
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>I Am A…</label>
+                <label style={labelStyle}>I Am A&hellip;</label>
                 <select style={selectStyle} value={form.role} onChange={e => set('role', e.target.value)}>
-                  <option value="">Select your role…</option>
+                  <option value="">Select your role&hellip;</option>
                   <option value="owner">Hotel owner</option>
                   <option value="operator">Operator / management company</option>
                   <option value="developer">Developer</option>
@@ -349,6 +344,26 @@ export default function Calculator() {
                   <option value="other">Other</option>
                 </select>
               </div>
+            </div>
+
+            {/* Consent checkbox */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.consent}
+                  onChange={e => set('consent', e.target.checked)}
+                  style={{ marginTop: '2px', flexShrink: 0, width: '16px', height: '16px', accentColor: '#C27C4E', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '13px', color: '#5A5E5A', lineHeight: '1.6' }}>
+                  I agree to be contacted by RevFlex regarding my inquiry and understand this is not a financing commitment or approval.
+                </span>
+              </label>
+              {errors.consent && (
+                <div style={{ fontSize: '12px', color: '#C0392B', marginTop: '6px', paddingLeft: '28px' }}>
+                  {errors.consent}
+                </div>
+              )}
             </div>
 
             {/* Honeypot — hidden from humans, bots fill this in */}
@@ -365,7 +380,7 @@ export default function Calculator() {
                 borderRadius: '7px', border: 'none', cursor: inquiryLoading ? 'wait' : 'pointer',
                 fontFamily: 'inherit', transition: 'background 0.2s ease'
               }}>
-                {inquiryLoading ? 'Submitting…' : 'Request Early Access →'}
+                {inquiryLoading ? 'Submitting\u2026' : 'Request Early Access \u2192'}
               </button>
               <button onClick={reset} style={{
                 background: 'transparent', color: '#7A6A5A', fontSize: '14px',
@@ -444,10 +459,10 @@ export default function Calculator() {
             <label style={labelStyle}>What Are You Improving? *</label>
             <select style={{ ...selectStyle, borderColor: errors.projectScope ? '#C0392B' : '#D0C9C0' }}
               value={form.projectScope} onChange={e => set('projectScope', e.target.value)}>
-              <option value="">Select project scope…</option>
+              <option value="">Select project scope&hellip;</option>
               <option value="soft">Soft Goods Refresh</option>
-              <option value="ffe">Guestroom FF&E</option>
-              <option value="ffe-common">FF&E + Common Areas</option>
+              <option value="ffe">Guestroom FF&amp;E</option>
+              <option value="ffe-common">FF&amp;E + Common Areas</option>
               <option value="bath">Bathroom + Hard Finish</option>
               <option value="full">Full Repositioning</option>
               <option value="pip">Brand PIP Compliance</option>
@@ -459,11 +474,11 @@ export default function Calculator() {
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={labelStyle}>When Are You Looking to Start?</label>
             <select style={selectStyle} value={form.timeline} onChange={e => set('timeline', e.target.value)}>
-              <option value="">Select a timeframe…</option>
+              <option value="">Select a timeframe&hellip;</option>
               <option value="immediate">Immediately / Within 30 days</option>
-              <option value="1-3mo">1–3 months</option>
-              <option value="3-6mo">3–6 months</option>
-              <option value="6-12mo">6–12 months</option>
+              <option value="1-3mo">1&ndash;3 months</option>
+              <option value="3-6mo">3&ndash;6 months</option>
+              <option value="6-12mo">6&ndash;12 months</option>
               <option value="exploring">Just exploring for now</option>
             </select>
           </div>
@@ -483,7 +498,7 @@ export default function Calculator() {
           border: 'none', cursor: loading ? 'wait' : 'pointer',
           fontFamily: 'inherit', letterSpacing: '0.02em', transition: 'background 0.2s ease'
         }}>
-          {loading ? 'Calculating…' : 'Estimate My RevFlex Financing →'}
+          {loading ? 'Calculating\u2026' : 'Estimate My RevFlex Financing \u2192'}
         </button>
 
         <p style={{ fontSize: '12px', color: '#B0A898', textAlign: 'center', marginTop: '14px', lineHeight: '1.6' }}>
