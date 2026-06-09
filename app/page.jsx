@@ -259,7 +259,7 @@ export default function Home() {
             We are building RevFlex with hotel owners and operators.
           </h2>
           <p style={{ fontSize: '16px', lineHeight: '1.75', color: '#9A9E9A', marginBottom: '36px' }}>
-            RevFlex is currently in early development. We are speaking with hotel owners, operators, and capital partners to refine the model. If you have a property improvement in mind, we would like to hear from you.
+            RevFlex is currently in early access and actively speaking with hotel owners, operators, and capital partners. If you have a property improvement in mind, we would like to hear from you.
           </p>
           <a href="#estimate" style={{
             display: 'inline-block', background: '#C27C4E', color: '#fff',
