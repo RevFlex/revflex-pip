@@ -315,6 +315,11 @@ export default function Calculator() {
 
           {/* Inquiry form */}
           <div style={{ padding: '28px 36px' }}>
+            {result.termCapped && (
+              <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '16px', fontStyle: 'italic' }}>
+                Because this project is sizable relative to your current revenue, the estimated payback reflects a longer repayment term.
+              </p>
+            )}
             <p style={{ fontSize: '13px', color: '#9A8A7A', lineHeight: '1.7', marginBottom: '24px', fontStyle: 'italic' }}>
               This is an illustrative estimate based on the inputs you provided — not a financing offer or approval. Your actual funding amount, revenue share, and total repayment obligation will be determined through full underwriting and property review. Revenue figures shown are benchmark-based estimates and are not guaranteed.
             </p>
