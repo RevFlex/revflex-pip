@@ -1,42 +1,54 @@
 # RevFlex
 
-> Revenue-based growth capital for hotel renovations and property improvements. RevFlex provides non-dilutive, revenue-aligned financing for hotels seeking to fund renovations, FF&E refresh, soft goods upgrades, and property repositioning without traditional bank debt, personal guarantees, or franchise requirements.
+> Revenue-based capital for hotel renovation projects designed to grow revenue. RevFlex funds guestroom renovations, repositioning, F&B redevelopment, and guest experience upgrades — repaid through a fixed share of room revenue. No traditional bank debt, no personal guarantee, no franchise requirement.
 
 ## What RevFlex Is
 
-RevFlex is a hospitality-focused revenue capital platform. It underwrites the future revenue lift a property improvement plan can reasonably support, rather than historical collateral or credit scores. Capital is repaid through a fixed share of gross room revenue. When revenue dips seasonally, payments decrease. When revenue grows after renovation, repayment accelerates. Total obligation is capped at 1.75x the advance.
+RevFlex is a hospitality-focused revenue capital platform. It underwrites the revenue a property improvement project is expected to create — not just historical collateral or credit scores. Capital is repaid through a fixed share of gross room revenue. When revenue dips seasonally, payments decrease. When revenue grows after renovation, repayment accelerates. The total obligation is the funding amount plus one fixed fee, agreed up front — no interest rate, no compounding, and the total never grows beyond what was agreed at closing.
 
 ## What RevFlex Is Not
 
 RevFlex is not a bank, not a traditional lender, not a merchant cash advance provider, not a hard-money lender, and not an equity investor. It does not require personal guarantees, franchise affiliation, or brand flags. It does not fund operating shortfalls or debt refinancing.
 
+## What RevFlex Funds
+
+RevFlex funds hotel improvement projects with a clear revenue thesis:
+
+- **Guestroom renovation** — closing the rate gap with renovated competitors; tired rooms cost ADR every night
+- **Full repositioning** — turning a dated property into a boutique product the market will pay more for
+- **Bathrooms and hard finishes** — the upgrades that change guest perception and review scores
+- **F&B and restaurant redevelopment** — turning underperforming outlets into revenue centers
+- **Amenities and wellness** — pools, spas, fitness, and outdoor spaces that justify a higher rate
+- **Event and group spaces** — venues that bring wedding, retreat, and group business
+
+Most renovations include some structural work alongside the revenue-driving scope. RevFlex evaluates the whole project as one.
+
 ## Product Structure
 
 - **Capital type**: Revenue-based financing for hotel property improvements
-- **Repayment**: Fixed percentage (5-7%) of gross room revenue, collected monthly
-- **Repayment cap**: 1.75x the capital advanced — then the agreement ends
-- **Grace period**: Approximately 90 days post-renovation completion
+- **Repayment**: A small fixed share of gross room revenue, collected monthly — never a fixed bill
+- **Total cost**: Funding amount plus one fixed fee, agreed up front; no interest rate, no compounding
+- **Grace period**: Approximately 90 days post-renovation completion before payments begin
 - **Personal guarantee**: Not required
 - **Franchise or brand flag**: Not required
 - **Equity dilution**: None
 - **Target close timeline**: 2-3 weeks from qualified inquiry
-- **Use of funds**: FF&E refresh, soft goods, bathroom renovation, common areas, full repositioning
 
 ## Underwriting Approach
 
 RevFlex evaluates hotels as operating businesses. Underwriting considers: current ADR (average daily rate), occupancy rate, RevPAR (revenue per available room), trailing twelve-month gross room revenue, competitive market position, guest review quality, property condition and deferred maintenance, improvement scope and cost estimates, market demand drivers and seasonality, and operator execution capability.
 
-RevFlex does not use FICO scores, personal financial statements, or traditional collateral-based underwriting.
+RevFlex underwrites the revenue lift the project is expected to create — ADR growth, occupancy growth, RevPAR improvement, and new revenue streams — rather than relying on FICO scores, personal financial statements, or traditional collateral-based underwriting.
 
 ## Target Properties
 
-- Hotels of all types: independent boutique, full-service, limited-service, branded franchise, inns, motels, and resorts
-- Properties planning or executing renovations, FF&E refresh, or property repositioning
+- Hotels of all types: independent boutique, full-service, limited-service, inns, motels, and resorts
+- Properties planning or executing revenue-generating renovations, FF&E refresh, or repositioning
 - Operators who have been declined by traditional lenders or who prefer revenue-aligned repayment over fixed debt service
 
 ## Revenue Improvement Framework
 
-Capital is intended for targeted property improvements that can reasonably support gains in average daily rate (ADR), occupancy, RevPAR, and guest experience. RevFlex estimates illustrative RevPAR improvement scenarios (conservative, base, optimistic) based on improvement scope:
+Capital is intended for targeted property improvements that can reasonably support gains in average daily rate (ADR), occupancy, RevPAR, and guest experience. Illustrative ADR improvement ranges by improvement scope, informed by U.S. industry renovation data:
 
 - Soft goods refresh: 2-5% estimated ADR improvement
 - FF&E guestroom targeted: 5-12% estimated ADR improvement
@@ -51,9 +63,10 @@ RevFlex is in early access. The platform is validating its model with hotel oper
 
 ## Contact and Qualification
 
-- Website: [revflex.com](https://revflex.com)
-- Qualification page: [revflex.com/apply](https://revflex.com/apply)
-- How it works: [revflex.com/how-it-works](https://revflex.com/how-it-works)
+- Website: [revflex-pip.vercel.app](https://revflex-pip.vercel.app)
+- Funding estimate: [revflex-pip.vercel.app/#estimate](https://revflex-pip.vercel.app/#estimate)
+- How it works: [revflex-pip.vercel.app/#how-it-works](https://revflex-pip.vercel.app/#how-it-works)
+- Contact: [revflex-pip.vercel.app/contact](https://revflex-pip.vercel.app/contact)
 
 ## Disclosures
 
