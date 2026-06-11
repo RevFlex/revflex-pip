@@ -1,17 +1,23 @@
-import './globals.css';
-import { Analytics } from '@vercel/analytics/react';
+import './globals.css'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata = {
-  title: 'RevFlex — Revenue-Aligned Capital for Hotel Improvements',
+  title: 'RevFlex — Capital for Hotel Renovations That Grow Revenue',
   description:
-    'RevFlex provides flexible, revenue-aligned financing for hotel property improvement projects. Repaid through a fixed share of room revenue. No personal guarantee. No franchise required.',
+    'RevFlex funds hotel renovation projects designed to grow revenue — guestrooms, repositioning, F&B, and amenities — repaid through a fixed share of room revenue. No personal guarantee. No franchise required.',
   openGraph: {
-    title: 'RevFlex — Revenue-Aligned Capital for Hotel Improvements',
+    title: 'RevFlex — Capital for Hotel Renovations That Grow Revenue',
     description:
-      'Flexible capital for hotel PIP, FF&E, soft goods, and repositioning. Repayment tied to revenue performance.',
+      'Capital for the renovations that raise your rate. Repayment flexes with your room revenue. One fixed fee — no interest rate, no compounding.',
     type: 'website',
   },
-};
+  twitter: {
+    card: 'summary',
+    title: 'RevFlex — Capital for Hotel Renovations That Grow Revenue',
+    description:
+      'Capital for the renovations that raise your rate. Repayment flexes with your room revenue. One fixed fee — no interest rate, no compounding.',
+  },
+}
 
 export default function RootLayout({ children }) {
   return (
@@ -29,5 +35,5 @@ export default function RootLayout({ children }) {
         <Analytics />
       </body>
     </html>
-  );
+  )
 }
