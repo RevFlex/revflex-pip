@@ -36,6 +36,7 @@ export default function Home() {
   const heroRef = useFadeUp(0)
   const challengeRef = useFadeUp(0)
   const structureRef = useFadeUp(0)
+  const whatWeFundRef = useFadeUp(0)
   const whyRef = useFadeUp(0)
   const earlyRef = useFadeUp(0)
 
@@ -65,14 +66,14 @@ export default function Home() {
             fontWeight: '400', lineHeight: '1.15',
             color: '#1A1D1A', marginBottom: '24px', letterSpacing: '-0.01em'
           }}>
-            Flexible capital for<br />hotel improvements.
+            Capital for the renovations<br />that raise your rate.
           </h1>
 
           <p style={{
             fontSize: '18px', lineHeight: '1.7', color: '#4A4E4A',
             maxWidth: '580px', margin: '0 auto 40px'
           }}>
-            RevFlex helps hotel owners fund property improvements with payments designed around your gross revenue.
+            RevFlex funds hotel improvement projects designed to grow revenue — guestroom renovations, repositioning, F&amp;B, and guest experience upgrades — repaid through a fixed share of room revenue.
           </p>
 
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -187,8 +188,88 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── WHAT WE FUND ── */}
+      <section style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(28px, 6vw, 40px)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div ref={whatWeFundRef}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9A8A7A', marginBottom: '14px', fontWeight: '600' }}>What We Fund</div>
+            <h2 style={{
+              fontFamily: "'Libre Baskerville', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: '400', lineHeight: '1.25',
+              color: '#1A1D1A', marginBottom: '16px', maxWidth: '600px'
+            }}>
+              Projects built to grow revenue.
+            </h2>
+            <p style={{ fontSize: '16px', lineHeight: '1.7', color: '#4A4E4A', maxWidth: '560px', marginBottom: '56px' }}>
+              RevFlex underwrites the revenue your project will create — not just the collateral behind it. If your improvement closes a rate gap, lifts occupancy, or opens a new revenue stream, it&rsquo;s the kind of project we&rsquo;re built for.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+              {[
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>,
+                  title: 'Guestroom renovation',
+                  body: "Close the rate gap with the renovated property down the street. Tired rooms cost you ADR every single night.",
+                  delay: 0
+                },
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>,
+                  title: 'Full repositioning',
+                  body: 'Turn a dated property into a boutique product your market will pay meaningfully more for.',
+                  delay: 50
+                },
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>,
+                  title: 'Bathrooms & hard finishes',
+                  body: 'The upgrades that change how guests perceive your product — and what they say in reviews.',
+                  delay: 100
+                },
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/><path d="M21 15v7"/></svg>,
+                  title: 'F&B & restaurant',
+                  body: 'Turn an underperforming outlet into a revenue center that draws guests and locals alike.',
+                  delay: 150
+                },
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+                  title: 'Amenities & wellness',
+                  body: 'Pools, spas, fitness, and outdoor spaces — the experiences that justify a higher rate.',
+                  delay: 200
+                },
+                {
+                  icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C27C4E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+                  title: 'Event & group spaces',
+                  body: 'Add or upgrade the venues that bring weddings, retreats, and group business to your books.',
+                  delay: 250
+                },
+              ].map(({ icon, title, body, delay }) => (
+                <FadeCard key={title} delay={delay}>
+                  <div style={{
+                    background: '#FAF8F4', borderRadius: '12px',
+                    padding: '28px 24px', border: '1px solid #E0D9CF', height: '100%',
+                    display: 'flex', flexDirection: 'column', gap: '12px'
+                  }}>
+                    <div style={{ lineHeight: '1' }}>{icon}</div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A1D1A', margin: 0, lineHeight: '1.3' }}>{title}</h3>
+                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: '#5A5E5A', margin: 0 }}>{body}</p>
+                  </div>
+                </FadeCard>
+              ))}
+            </div>
+
+            <p style={{
+              fontSize: '14px', lineHeight: '1.75', color: '#7A6A5A',
+              maxWidth: '560px', margin: '40px auto 0', textAlign: 'center'
+            }}>
+              Most renovations include some structural work alongside the revenue-driving scope. Tell us about the whole project — we evaluate it as one.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── CALCULATOR ── */}
-      <section id="estimate" style={{ background: '#F3EEE7', padding: 'clamp(56px, 8vw, 88px) clamp(24px, 6vw, 32px)' }}>
+      <section id="estimate" style={{ background: '#F3EEE7', borderTop: '1px solid #E0D9CF', padding: 'clamp(56px, 8vw, 88px) clamp(24px, 6vw, 32px)' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <Calculator />
         </div>
@@ -301,7 +382,7 @@ export default function Home() {
 const FAQ_ITEMS = [
   {
     q: "Is RevFlex a loan?",
-    a: "No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. The total obligation is capped at a fixed multiple of the amount funded, and once that cap is reached, the agreement ends."
+    a: "No. RevFlex provides revenue-based financing through a revenue participation agreement — not a traditional loan. There is no fixed interest rate, no compounding, and no fixed monthly payment schedule. Instead, repayment is tied to a percentage of your gross revenue. When revenue is lower, payments are lower. Your total obligation is your funding amount plus one fixed fee, agreed up front — once that total is repaid, the agreement ends."
   },
   {
     q: "What properties qualify for RevFlex financing?",
